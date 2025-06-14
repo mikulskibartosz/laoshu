@@ -1,0 +1,12 @@
+---
+description:
+globs: *.py
+alwaysApply: false
+---
+When generating or refactoring Python code, follow the Google Python Style Guide (https://google.github.io/styleguide/pyguide.html).  Adhere to its conventions for:
+    * Indentation: 4 spaces per level
+    * Maximum line length: 80 characters
+    * Naming: snake_case for functions and variables; PascalCase for classes
+    * Import order: standard library, third-party, then local imports
+    * Docstrings: Google style with Args, Returns, Raises sections
+    * Whitespace: blank lines around top-level definitions and between methods

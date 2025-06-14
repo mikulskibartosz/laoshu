@@ -1,0 +1,25 @@
+[project]
+name = "laoshu"
+version = "0.1.0"
+description = "Detects and flags hallucinated citations in GPT-4 / Perplexity outputs via a simple CLI."
+authors = [
+    {name = "Bartosz Mikulski",email = "mail@mikulskibartosz.name"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "baml-py (>=0.89.0,<0.90.0)",
+    "click (>=8.2.1,<9.0.0)",
+    "httpx (>=0.28.1,<0.29.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+black = "^25.1.0"
+pytest = "^8.4.0"
+mypy = "^1.16.0"
+
