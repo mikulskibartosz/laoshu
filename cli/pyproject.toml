@@ -6,11 +6,11 @@ authors = [
     {name = "Bartosz Mikulski",email = "mail@mikulskibartosz.name"}
 ]
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<4.0"
 dependencies = [
-    "baml-py (>=0.89.0,<0.90.0)",
     "click (>=8.2.1,<9.0.0)",
-    "httpx (>=0.28.1,<0.29.0)"
+    "httpx (>=0.28.1,<0.29.0)",
+    "llama-index (>=0.12.44,<0.13.0)"
 ]
 
 
