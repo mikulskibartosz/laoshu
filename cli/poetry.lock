@@ -224,24 +224,6 @@ tests = ["cloudpickle ; platform_python_implementation == \"CPython\"", "hypothe
 tests-mypy = ["mypy (>=1.11.1) ; platform_python_implementation == \"CPython\" and python_version >= \"3.10\"", "pytest-mypy-plugins ; platform_python_implementation == \"CPython\" and python_version >= \"3.10\""]
 
 [[package]]
-name = "baml-py"
-version = "0.89.0"
-description = "BAML python bindings (pyproject.toml)"
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "baml_py-0.89.0-cp38-abi3-macosx_10_12_x86_64.whl", hash = "sha256:ff29d792085c7855cbaf25e82e9286b1fa9d87722655fb5609462a50a7cb7cfb"},
-    {file = "baml_py-0.89.0-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:37d5f42ddda130af6670501a4ad8d95673269fce86d54bfd9fd805f46c0ad4d0"},
-    {file = "baml_py-0.89.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9acb5f297315a1aae5393752065a251ca5201725834aa70d0caf42834ff69eee"},
-    {file = "baml_py-0.89.0-cp38-abi3-manylinux_2_24_aarch64.whl", hash = "sha256:88d6e0dd15bb7250e404dd67b5fae65c732ddf7fd381308157a0189191ff90b3"},
-    {file = "baml_py-0.89.0-cp38-abi3-musllinux_1_1_aarch64.whl", hash = "sha256:0ea138bc802a509aadbfa9df696c193377b9fe462fca142142c5d7c5e6ce0c8e"},
-    {file = "baml_py-0.89.0-cp38-abi3-musllinux_1_1_x86_64.whl", hash = "sha256:2e608375493c4c0d53fd253c1e682c3f6612c4903bbb10d808c95d385d26043c"},
-    {file = "baml_py-0.89.0-cp38-abi3-win_amd64.whl", hash = "sha256:d06e8f5226688b6168704ceacfc8e0e739acbbbb99fb70223fee96db4be79891"},
-    {file = "baml_py-0.89.0-cp38-abi3-win_arm64.whl", hash = "sha256:bb7667d35dc2edb5fc4966df143077f8ce89fc0e436d01bb90cb46dd0edf754f"},
-]
-
-[[package]]
 name = "banks"
 version = "2.1.3"
 description = "A prompt programming language"
@@ -3200,4 +3182,4 @@ propcache = ">=0.2.1"
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "fc76bc032bf82227ffcd0ddcefd0729ac5cfc169b10042ad0c4e6b35083e36bf"
+content-hash = "91e45f6a6aff4c2e00d4a42ee3747097ad138844727ee3d4c60720ea4b40ca3e"

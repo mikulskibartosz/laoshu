@@ -10,7 +10,8 @@ requires-python = ">=3.10,<4.0"
 dependencies = [
     "click (>=8.2.1,<9.0.0)",
     "httpx (>=0.28.1,<0.29.0)",
-    "llama-index (>=0.12.44,<0.13.0)"
+    "llama-index (>=0.12.44,<0.13.0)",
+    "llama-index-llms-openai (>=0.4.7,<0.5.0)"
 ]
 
 
