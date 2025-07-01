@@ -1,0 +1,16 @@
+query: "Longest bridges in the world in 2015"
+ai_service: "Perplexity"
+mode: "research"
+claims:
+  - info: "The Danyang–Kunshan Grand Bridge in China held the title as the world's longest bridge in 2015"
+    is_hallucinated: false
+  - info: "This massive viaduct, completed in 2011..."
+    is_hallucinated: false
+  - info: "The bridge required approximately 10,000 workers over four years to complete and cost around $8.5 billion."
+    is_hallucinated: true
+    reason: "The information is correct but it comes from a different source. Not the one quoted in the claim."
+
+---
+
+The Undisputed Champion: Danyang–Kunshan Grand Bridge
+The Danyang–Kunshan Grand Bridge in China held the title as the world's longest bridge in 2015, stretching an impressive 164.8 kilometers (102.4 miles) [1](https://www.civitatis.com/blog/en/longest-bridges-in-the-world/) [2](https://www.thortech.co.uk/bridges/5-of-the-worlds-longest-bridges/). This massive viaduct, completed in 2011, formed a crucial part of the Beijing–Shanghai High-Speed Railway and was officially recognized by Guinness World Records as the longest bridge in the world in any category [2](https://www.thortech.co.uk/bridges/5-of-the-worlds-longest-bridges/) [3](https://www.motivewith.com/en/get-motivated/world-longest-bridge-span-by-types). The bridge required approximately 10,000 workers over four years to complete and cost around $8.5 billion [3](https://www.motivewith.com/en/get-motivated/world-longest-bridge-span-by-types).
