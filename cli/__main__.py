@@ -3,6 +3,7 @@ import click
 from typing import List
 from rich.console import Console
 from rich.table import Table
+from laoshu.config.logger import setup_logger
 from laoshu.verification.verification import (
     verify_citations_in_file,
     VerificationResult,
@@ -14,14 +15,15 @@ def main() -> None:
     pass
 
 
-@main.command()
-@click.argument("file", type=click.Path(exists=True))
-def check_file(file: str) -> None:
-    results = asyncio.run(verify_citations_in_file(file))
-    __show_results(results)
+@main.command("check")
+@click.option("--file", "file_path", type=click.Path(exists=True), required=True)
+@click.option("--onlyincorrect", "only_incorrect", is_flag=True, default=False)
+def check_file(file_path: str, only_incorrect: bool) -> None:
+    results = asyncio.run(verify_citations_in_file(file_path))
+    __show_results(results, only_incorrect)
 
 
-def __show_results(results: List[VerificationResult]) -> None:
+def __show_results(results: List[VerificationResult], only_incorrect: bool) -> None:
     console = Console()
 
     table = Table(
@@ -29,19 +31,20 @@ def __show_results(results: List[VerificationResult]) -> None:
     )
     table.add_column("Claim")
     table.add_column("Sources")
-    table.add_column("Is Correct")
-    table.add_column("Reasoning")
+    table.add_column("Is based on provided sources?")
 
     for result in results:
+        if only_incorrect and result.is_correct:
+            continue
         table.add_row(
             result.claim,
             ", ".join(result.sources),
             "Yes" if result.is_correct else "No",
-            result.reasoning,
         )
 
     console.print(table)
 
 
 if __name__ == "__main__":
+    setup_logger()
     main()

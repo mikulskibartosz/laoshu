@@ -6,6 +6,9 @@ import os
 from asyncio import gather
 from laoshu.scraping.scrapingant import ScrapingantScraper
 from laoshu.citations.extraction import get_citations_with_sources, Citation
+import logging
+
+log = logging.getLogger(__name__)
 
 
 @dataclass
@@ -35,9 +38,8 @@ async def verify_citations_in_file(file: str) -> List[VerificationResult]:
 
     citations: List[Citation] = get_citations_with_sources(text)
 
-    retrieved_pages = await gather(
-        *[scraper.fetch_many_markdowns(citation.sources) for citation in citations]
-    )
+    # TODO do it async, but synchronize the number of requests to the server with the scraper (it also has async processing)
+    retrieved_pages = [await scraper.fetch_many_markdowns(citation.sources) for citation in citations]
 
     claims_with_sources = zip(citations, retrieved_pages)
 
@@ -52,4 +54,5 @@ async def verify_citations_in_file(file: str) -> List[VerificationResult]:
                 reasoning=result.reason,
             )
         )
+    log.info(f"Verified {len(results)} citations.")
     return results

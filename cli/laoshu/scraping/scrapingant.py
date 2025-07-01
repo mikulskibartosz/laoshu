@@ -1,7 +1,10 @@
 from typing import List
 import httpx
 from asyncio import gather
+import logging
 from .interface import Scraper, ScraperError
+
+log = logging.getLogger(__name__)
 
 
 class ScrapingantScraper(Scraper):
@@ -9,13 +12,16 @@ class ScrapingantScraper(Scraper):
         self,
         api_key: str,
         timeout_seconds: int = 60,
+        concurrent_requests: bool = False,
         use_headless_browser: bool = False,
     ):
         self.api_key = api_key
         self.timeout_seconds = timeout_seconds
+        self.concurrent_requests = concurrent_requests
         self.use_headless_browser = use_headless_browser
 
     async def fetch_markdown(self, url: str) -> str:
+        log.info(f"Fetching markdown from {url}.")
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.get(
@@ -28,6 +34,7 @@ class ScrapingantScraper(Scraper):
                     timeout=self.timeout_seconds,
                 )
                 response.raise_for_status()
+                log.info(f"Fetched markdown from {url}.")
                 return response.text
         except httpx.RequestError as e:
             raise ScraperError(
@@ -43,4 +50,15 @@ class ScrapingantScraper(Scraper):
             )
 
     async def fetch_many_markdowns(self, urls: List[str]) -> List[str]:
-        return await gather(*[self.fetch_markdown(url) for url in urls])
+        deduplicated_urls = list(set(urls))
+        log.info(f"Fetching {len(deduplicated_urls)} deduplicated markdown(s) from original {len(urls)} urls.")
+
+        results = []
+        if self.concurrent_requests:
+            results = await gather(*[self.fetch_markdown(url) for url in deduplicated_urls])
+        else:
+            results = [await self.fetch_markdown(url) for url in deduplicated_urls]
+
+        url_to_content = dict(zip(deduplicated_urls, results))
+        ordered_results = [url_to_content[url] for url in urls]
+        return ordered_results

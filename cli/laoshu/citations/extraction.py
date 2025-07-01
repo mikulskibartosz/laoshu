@@ -1,6 +1,10 @@
 import re
 from typing import List, Optional
 from dataclasses import dataclass
+import logging
+
+
+log = logging.getLogger(__name__)
 
 
 @dataclass
@@ -60,4 +64,5 @@ def get_citations_with_sources(article: str) -> List[Citation]:
         if citation_text:
             citations.append(Citation(text=citation_text, sources=sources[::-1]))
 
+    log.info(f"Extracted {len(citations)} citations.")
     return citations
