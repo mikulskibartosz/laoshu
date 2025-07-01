@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, List
 
 
 @dataclass
@@ -36,5 +36,9 @@ class Scraper(ABC):
     """
 
     @abstractmethod
-    def fetch_markdown(self, url: str) -> str:
+    async def fetch_markdown(self, url: str) -> str:
+        pass
+
+    @abstractmethod
+    async def fetch_many_markdowns(self, urls: List[str]) -> List[str]:
         pass
