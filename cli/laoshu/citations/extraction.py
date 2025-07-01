@@ -32,11 +32,23 @@ def _strip_last_link(paragraph: str) -> Optional[ParagraphLink]:
     return None
 
 
+def _split_paragraphs(article: str) -> List[str]:
+    match = re.search(r"\[[^\]]*\]\([^)]+\)(?:\.)\s*", article.strip())
+    if not match:
+        return [article.strip()]
+    end_pos = match.end()
+
+    matched, rest = article[:end_pos], article[end_pos:]
+
+    from_rest = _split_paragraphs(rest)
+
+    return [matched.strip()] + from_rest
+
+
 def get_citations_with_sources(article: str) -> List[Citation]:
     citations: List[Citation] = []
 
-    # Split article into paragraphs
-    paragraphs = article.split("\n\n")
+    paragraphs = _split_paragraphs(article)
 
     for paragraph in paragraphs:
         citation_text = None
