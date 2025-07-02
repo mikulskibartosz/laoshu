@@ -1,4 +1,4 @@
-.PHONY: test format check-format lint
+.PHONY: test format check-format lint build-publish
 
 test:
 	poetry run pytest
@@ -14,3 +14,7 @@ check-format:
 
 lint:
 	poetry run mypy .
+
+build-publish:
+	poetry build
+	poetry publish
