@@ -51,11 +51,15 @@ class ScrapingantScraper(Scraper):
 
     async def fetch_many_markdowns(self, urls: List[str]) -> List[str]:
         deduplicated_urls = list(set(urls))
-        log.info(f"Fetching {len(deduplicated_urls)} deduplicated markdown(s) from original {len(urls)} urls.")
+        log.info(
+            f"Fetching {len(deduplicated_urls)} deduplicated markdown(s) from original {len(urls)} urls."
+        )
 
         results = []
         if self.concurrent_requests:
-            results = await gather(*[self.fetch_markdown(url) for url in deduplicated_urls])
+            results = await gather(
+                *[self.fetch_markdown(url) for url in deduplicated_urls]
+            )
         else:
             results = [await self.fetch_markdown(url) for url in deduplicated_urls]
 

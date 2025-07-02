@@ -23,6 +23,16 @@ def check_file(file_path: str, only_incorrect: bool) -> None:
     __show_results(results, only_incorrect)
 
 
+@main.command("web")
+@click.option("--host", "host", type=str, default="0.0.0.0")
+@click.option("--port", "port", type=int, default=8000)
+def web(host: str, port: int) -> None:
+    import uvicorn
+    from laoshu.api.api import app
+
+    uvicorn.run(app, host=host, port=port)
+
+
 def __show_results(results: List[VerificationResult], only_incorrect: bool) -> None:
     console = Console()
 
