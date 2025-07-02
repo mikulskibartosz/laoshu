@@ -107,3 +107,6 @@ venv.bak/
 
 .DS_Store
 PRIVATE.md
+
+full_size_assets/*
+run.sh

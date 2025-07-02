@@ -12,6 +12,10 @@ from laoshu.verification.verification import (
 
 @click.group()
 def main() -> None:
+    """Laoshu.ai - Citation verification tool.
+
+    Laoshu.ai is released under the GNU Affero General Public License v3.0. Commercial entities wishing to use it under a different license should contact me. (https://mikulskibartosz.name)
+    """
     pass
 
 
@@ -19,6 +23,10 @@ def main() -> None:
 @click.option("--file", "file_path", type=click.Path(exists=True), required=True)
 @click.option("--onlyincorrect", "only_incorrect", is_flag=True, default=False)
 def check_file(file_path: str, only_incorrect: bool) -> None:
+    """Check citations in a file.
+
+    Laoshu.ai is released under the GNU Affero General Public License v3.0. Commercial entities wishing to use it under a different license should contact me. (https://mikulskibartosz.name)
+    """
     results = asyncio.run(verify_citations_in_file(file_path))
     __show_results(results, only_incorrect)
 
@@ -27,6 +35,10 @@ def check_file(file_path: str, only_incorrect: bool) -> None:
 @click.option("--host", "host", type=str, default="0.0.0.0")
 @click.option("--port", "port", type=int, default=8000)
 def web(host: str, port: int) -> None:
+    """Start the web server.
+
+    Laoshu.ai is released under the GNU Affero General Public License v3.0. Commercial entities wishing to use it under a different license should contact me. (https://mikulskibartosz.name)
+    """
     import uvicorn
     from laoshu.api.api import app
 
