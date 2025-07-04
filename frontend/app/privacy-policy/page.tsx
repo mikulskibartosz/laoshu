@@ -80,7 +80,7 @@ We may update this Privacy Policy from time to time to reflect changes in our pr
 
 If you have any questions, concerns, or requests related to this Privacy Policy, you can contact us at:
 
-Email: Please create a GitHub issue at {config.repositoryUrlNewIssue}
+Email: Please create a GitHub issue at ${config.repositoryUrlNewIssue}
 
 For all other inquiries, please visit our website at https://laoshu.ai.
 
