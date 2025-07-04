@@ -1,6 +1,8 @@
 import os
 
 
+REQUIRED_API_KEYS = ["SCRAPINGANT_API_KEY", "OPENAI_API_KEY"]
+
 def read_env_vars() -> dict[str, str]:
     """
     Read environment variables from .env file and check if they are overridden by actual environment variables.
@@ -19,12 +21,12 @@ def read_env_vars() -> dict[str, str]:
                     key = key.strip()
                     value = value.strip()
 
-                    # Check if environment variable is overridden
-                    if key in os.environ:
-                        env_vars[key] = os.environ[key]
-                    else:
-                        env_vars[key] = value
+        for key in REQUIRED_API_KEYS:
+            if key in os.environ:
+                env_vars[key] = os.environ[key]
     except FileNotFoundError:
-        pass
+        # If .env file is not found, read all environment variables from os.environ
+        for key in os.environ:
+            env_vars[key] = os.environ[key]
 
     return env_vars
