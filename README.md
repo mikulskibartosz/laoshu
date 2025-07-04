@@ -46,7 +46,7 @@ One slip, and your credibility's gone.
 Run Laoshu.ai with Docker:
 
 ```sh
-docker run -p 3000:3000 -e SCRAPINGANT_API_KEY=your_key -e OPENAI_API_KEY=your_key mikulskibartosz/laoshu:latest
+docker run -p 3000:3000 -e SCRAPINGANT_API_KEY=your_key -e OPENAI_API_KEY=your_key mikulskibartosz/laoshu:0.0.1-dev
 ```
 
 Open your browser at [http://localhost:3000](http://localhost:3000), drop text, get the verdict.
