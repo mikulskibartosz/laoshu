@@ -21,7 +21,7 @@ const Footer = () => {
           <p className="mt-3 text-sm text-base-content/60">
           Lǎoshǔ.ai is released under the GNU Affero General Public License v3.0. Commercial entities wishing to use it under a different license should contact me.
           <br/>
-          <Link href="/privacy-policy" className="link link-hover font-semibold">Privacy Policy</Link> | <Link href="/tos" className="link link-hover font-semibold">Terms of Service</Link>
+          <Link href="/privacy-policy" className="link link-hover font-semibold">Privacy Policy</Link> | <Link href="/tos" className="link link-hover font-semibold">Terms of Service</Link> | <Link href="https://github.com/mikulskibartosz/laoshu" className="link link-hover font-semibold">Source Code</Link> | <Link href="https://laoshu.ai" className="link link-hover font-semibold">Project Website</Link>
           </p>
         </div>
       </div>
