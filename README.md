@@ -1,6 +1,6 @@
 # [Lǎoshǔ.ai](https://laoshu.ai)
 
-![Lǎoshǔ.ai Logo](website/logo.png)
+![Lǎoshǔ.ai Logo](docs/logo.png)
 
 Expose AI Citation Fakes Instantly
 
@@ -14,11 +14,11 @@ One slip, and your credibility's gone.
 
 ### Without Laoshu.ai
 
-![Without Laoshu.ai](website/without_laoshu.png)
+![Without Laoshu.ai](docs/without_laoshu.png)
 
 ### With Laoshu.ai
 
-![With Laoshu.ai](website/with_laoshu.png)
+![With Laoshu.ai](docs/with_laoshu.png)
 
 ---
 
