@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Laoshu.ai - Automate AI citation verification</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <style>
+    /* --------- Variables --------- */
+    :root {
+      --accent: #0a84ff;
+      --accent-light: #3ea1ff;
+      --bg: #ffffff;
+      --bg-alt: #f8fbff;
+      --text: #111111;
+      --muted: #555555;
+      --radius: 10px;
+    }
+
+    /* --------- Base --------- */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
+        "Helvetica Neue", sans-serif;
+      color: var(--text);
+      background: #fafbfc;
+      line-height: 1.6;
+      scroll-behavior: smooth;
+    }
+    section,
+    footer {
+      padding: 5rem 1rem;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    h1,
+    h2 {
+      margin: 0;
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: 0.5px;
+    }
+    h1 {
+      font-size: clamp(2.5rem, 8vw, 3.5rem);
+      background: linear-gradient(90deg, var(--accent), var(--accent-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    h2 {
+      font-size: clamp(1.8rem, 6vw, 2.3rem);
+    }
+
+    p {
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+      font-size: 1.1rem;
+    }
+
+    /* --------- Buttons --------- */
+    .button {
+      display: inline-block;
+      background: var(--accent);
+      color: #ffffff;
+      text-decoration: none;
+      padding: 0.9rem 1.6rem;
+      border-radius: var(--radius);
+      font-weight: 600;
+      font-size: 1.1rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .button:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 32px rgba(10, 132, 255, 0.45);
+    }
+
+    /* --------- Hero --------- */
+    .hero {
+      position: relative;
+      min-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      overflow: hidden;
+    }
+    /* animated blobs */
+    .hero::before,
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle at center, var(--accent-light), transparent 70%);
+      opacity: 0.15;
+      filter: blur(60px);
+      animation: float 20s ease-in-out infinite;
+      z-index: -1;
+    }
+    .hero::after {
+      top: 60%;
+      left: -30%;
+      animation-delay: -10s;
+    }
+    @keyframes float {
+      0%, 100% { transform: translate(-25%, -10%) scale(1); }
+      50% { transform: translate(0%, 10%) scale(1.15); }
+    }
+    .hero-sub {
+      max-width: 650px;
+      font-size: 1.25rem;
+      margin: 1rem auto 2rem;
+    }
+
+    /* --------- Lists / Blocks --------- */
+    ul {
+      list-style: none;
+      padding-left: 0;
+    }
+    ul li::before {
+      content: "✔";
+      color: var(--accent);
+      margin-right: 0.7rem;
+      font-size: 1.3em;
+      font-weight: bold;
+    }
+
+    pre {
+      background: #f3f5f7;
+      padding: 1rem 1.2rem;
+      border-radius: var(--radius);
+      overflow-x: auto;
+      font-size: 0.95rem;
+    }
+    code {
+      background: none;
+      padding: 0;
+      font-size: inherit;
+      border-radius: 0;
+      display: block;
+    }
+
+    blockquote {
+      margin: 0;
+      padding: 1.2rem 2rem;
+      background: var(--bg-alt);
+      border-left: 4px solid var(--accent);
+      font-style: italic;
+      border-radius: var(--radius);
+      font-size: 1.15rem;
+    }
+
+    /* --------- Alternating BG sections --------- */
+    .alt {
+      background: #f0f4fa;
+    }
+
+    /* --------- Footer --------- */
+    footer {
+      background: #f2f2f2;
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <!-- Logo and Hero Block -->
+  <header class="hero">
+    <div style="position:absolute;top:2rem;left:2rem;display:flex;align-items:center;z-index:2;">
+      <img src="logo.png" alt="Laoshu.ai logo" style="width:48px;height:48px;" />
+      <span style="margin-left:0.75rem;font-size:1.6rem;font-weight:800;color:var(--accent);font-family:inherit;letter-spacing:1px;">Lǎoshǔ.ai</span>
+    </div>
+    <div class="container">
+      <h1>Expose AI Citation Fakes Instantly</h1>
+      <p class="hero-sub">
+        LLMs bluff. You get blamed. <br/>
+        Laoshu.ai slams the brakes on fake citations so you ship only the truth.
+      </p>
+      <a class="button" href="#get-laoshu">Get Laoshu.ai (it's free)</a>
+    </div>
+  </header>
+
+  <!-- Problem Agitation -->
+  <section class="alt">
+    <div class="container">
+      <h2>Fake Citations Kill Trust</h2>
+      <p>One slip, and your credibility's gone.</p>
+      <h3>Without Laoshu.ai</h3>
+      <img src="without_laoshu.png" alt="Without Laoshu.ai" style="width:100%;height:auto;border-radius:10px;margin-bottom:1rem;" />
+      <h3>With Laoshu.ai <img src="logo.png" alt="Laoshu.ai logo" style="width:32px;height:32px;vertical-align:middle;margin-right:0.5rem;" /></h3>
+      <img src="with_laoshu.png" alt="With Laoshu.ai" style="width:100%;height:auto;border-radius:10px;margin-bottom:1rem;" />
+    </div>
+  </section>
+
+  <!-- Value Proposition -->
+  <section>
+    <div class="container">
+      <h2>Why Trust Laoshu.ai?</h2>
+      <ul>
+        <li><strong>Catch</strong> fake citations before they catch you.</li>
+        <li><strong>Ship</strong> with confidence. No more AI lies.</li>
+        <li><strong>Open-source</strong> (AGPL), zero black box.</li>
+        <li><strong>Self-hosted</strong>, your keys, your data.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section class="alt">
+    <div class="container">
+      <h2>How Laoshu.ai Works</h2>
+      <ol>
+        <li>Paste any output from Perplexity/ChatGPT Deep Research.</li>
+        <li>Laoshu fetches every source.</li>
+        <li>Get instant pass/fail verdicts.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Developer Section -->
+  <!-- <section>
+    <div class="container">
+      <h2>For Devs &amp; Data Teams</h2>
+      <pre><code>pip install laoshu
+laoshu verify response.txt   # exit 1 if a citation fails</code></pre>
+      <p>CI-safe, reproducible, zero config.</p>
+    </div>
+  </section> -->
+
+  <!-- Non-Coder Section -->
+  <section class="alt">
+    <div id="get-laoshu" class="container">
+      <h2>Get Laoshu.ai</h2>
+      <div style="background: #fff3cd; color: #856404; border-left: 6px solid #ffe066; border-radius: var(--radius); padding: 1.1rem 1.5rem; margin-bottom: 1.5rem; font-size: 1.08rem; font-weight: 500; display: flex; align-items: flex-start; gap: 0.7rem;">
+        <span style="font-size:1.5rem;line-height:1;">⚠️</span>
+        <span>
+          <strong>Warning:</strong> This is an early proof-of-concept release. It more or less works with Perplexity outputs.
+        </span>
+      </div>
+      <pre><code>docker run -p 3000:3000 -e SCRAPINGANT_API_KEY=your_key -e OPENAI_API_KEY=your_key mikulskibartosz/laoshu:latest</code></pre>
+      <p>Open your browser (http://localhost:3000), drop text, get the verdict.</p>
+      <p>Bring your own <a href="https://scrapingant.com/">ScrapingAnt</a> & <a href="https://platform.openai.com/settings/organization/api-keys">OpenAI</a> keys.</p>
+    </div>
+  </section>
+
+  <!-- Proof / Social Trust -->
+  <section>
+    <div class="container">
+      <blockquote>
+        "You won't lose your job to AI. You'll lose it because your CEO trusts hallucinated AI output. Laoshu might save you." — me ;)
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="alt" style="text-align:center;">
+    <div class="container">
+      <a class="button" href="#get-laoshu">Start Fact-Checking Now</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      Source code: <a href="https://github.com/mikulskibartosz/laoshu">https://github.com/mikulskibartosz/laoshu</a><br/>
+      Built by <strong><a href="https://www.linkedin.com/in/mikulskibartosz">Bartosz Mikulski</a></strong> — AI hallucination-prevention specialist. Need custom fixes? <a href="https://mikulskibartosz.name">Let's talk.</a>
+    </div>
+  </footer>
+</body>
+</html>

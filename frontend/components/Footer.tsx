@@ -15,7 +15,7 @@ const Footer = () => {
             >
               Bartosz Mikulski
             </a>{" "}
-            — AI-hallucination specialist delivering rapid MVPs, seamless LLM integration, and production-grade reliability fixes.<br/>
+            — AI hallucination-prevention specialist delivering rapid MVPs, seamless LLM integration, and production-grade reliability fixes.<br/>
             Lǎoshǔ found an issue you can&apos;t squash? <a href="https://mikulskibartosz.name/about" className="link link-hover font-semibold">Reach out for a custom solution.</a>
           </p>
           <p className="mt-3 text-sm text-base-content/60">
