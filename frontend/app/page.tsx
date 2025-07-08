@@ -28,13 +28,47 @@ export default function Page() {
 
     try {
       for await (const claim of verifyAI(markdown)) {
-        setResults(prev => [...prev, claim]);
+        setResults(prev => mergeClaimResult(prev, claim));
         console.log(claim);
       }
     } catch (error) {
       toast.error("Error verifying AI content");
     } finally {
       setShowProgress(false);
+    }
+  }
+
+  function mergeClaimResult(prev: Claim[], newClaim: Claim): Claim[] {
+    // Find if claim exists
+    const claimIndex = prev.findIndex(c => c.claim === newClaim.claim);
+    if (claimIndex === -1) {
+      // New claim, add it
+      return [...prev, newClaim];
+    } else {
+      // Claim exists, update sources
+      const existingClaim = prev[claimIndex];
+      const updatedSources = [...existingClaim.sources];
+
+      newClaim.sources.forEach(newSource => {
+        const sourceIndex = updatedSources.findIndex(
+          s => s.source === newSource.source
+        );
+        if (sourceIndex === -1) {
+          // New source for this claim
+          updatedSources.push(newSource);
+        } else {
+          // Replace existing source
+          updatedSources[sourceIndex] = newSource;
+        }
+      });
+
+      // Replace the claim in the array
+      const updatedClaims = [...prev];
+      updatedClaims[claimIndex] = {
+        ...existingClaim,
+        sources: updatedSources,
+      };
+      return updatedClaims;
     }
   }
 
@@ -56,7 +90,7 @@ export default function Page() {
 
           {showProgress && <ProgressIndicator />}
           {results.length > 0 && (
-            <ResultTable results={results} />
+            <ResultTable results={results} disableButtons={showProgress} />
           )}
         </section>
       </main>

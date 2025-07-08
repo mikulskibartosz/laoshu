@@ -7,9 +7,10 @@ import { Claim } from "@/libs/verify_ai";
 
 interface ResultTableProps {
   results: Claim[];
+  disableButtons?: boolean;
 }
 
-const ResultTable: React.FC<ResultTableProps> = ({ results }) => {
+const ResultTable: React.FC<ResultTableProps> = ({ results, disableButtons = false }) => {
   if (!results || results.length === 0) {
     return null;
   }
@@ -24,10 +25,11 @@ const ResultTable: React.FC<ResultTableProps> = ({ results }) => {
         <button
           className="btn btn-outline"
           onClick={() => { window.location.href = "/"; }}
+          disabled={disableButtons}
         >
           Run another check
         </button>
-        <button className="btn btn-outline" onClick={handlePrintPDF}>
+        <button className="btn btn-outline" onClick={handlePrintPDF} disabled={disableButtons}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
