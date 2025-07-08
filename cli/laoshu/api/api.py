@@ -9,30 +9,44 @@ class CheckRequest(BaseModel):
     only_incorrect: bool = False
 
 
+class SourceVerificationResult(BaseModel):
+    source: str
+    is_correct: bool
+    reasoning: str
+
+
 class CheckResponse(BaseModel):
     claim: str
-    sources: List[str]
-    is_correct: bool
+    sources: List[SourceVerificationResult]
 
 
 app = FastAPI()
 
 
 @app.post("/check")
-async def check(
-    request: CheckRequest
-) -> List[CheckResponse]:
+async def check(request: CheckRequest) -> List[CheckResponse]:
     results = await verify_citations(request.text)
 
     response = []
     for result in results:
-        if request.only_incorrect and result.is_correct:
+        if request.only_incorrect and all(
+            source.is_correct for source in result.sources
+        ):
             continue
+
+        claim_results = []
+        for source in result.sources:
+            claim_results.append(
+                SourceVerificationResult(
+                    source=source.source,
+                    is_correct=source.is_correct,
+                    reasoning=source.reasoning,
+                )
+            )
         response.append(
             CheckResponse(
                 claim=result.claim,
-                sources=result.sources,
-                is_correct=result.is_correct,
+                sources=claim_results,
             )
         )
 

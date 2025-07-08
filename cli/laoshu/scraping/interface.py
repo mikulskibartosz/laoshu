@@ -4,6 +4,12 @@ from typing import Optional, List
 
 
 @dataclass
+class ScrapingResult:
+    url: str
+    markdown: str
+
+
+@dataclass
 class ScraperError(Exception):
     """
     Exception raised when there is an error during the scraping process.
@@ -36,9 +42,9 @@ class Scraper(ABC):
     """
 
     @abstractmethod
-    async def fetch_markdown(self, url: str) -> str:
+    async def fetch_markdown(self, url: str) -> ScrapingResult:
         pass
 
     @abstractmethod
-    async def fetch_many_markdowns(self, urls: List[str]) -> List[str]:
+    async def fetch_many_markdowns(self, urls: List[str]) -> List[ScrapingResult]:
         pass

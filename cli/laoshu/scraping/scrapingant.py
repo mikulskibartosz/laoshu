@@ -2,7 +2,7 @@ from typing import List
 import httpx
 from asyncio import gather
 import logging
-from .interface import Scraper, ScraperError
+from .interface import Scraper, ScraperError, ScrapingResult
 
 log = logging.getLogger(__name__)
 
@@ -20,7 +20,7 @@ class ScrapingantScraper(Scraper):
         self.concurrent_requests = concurrent_requests
         self.use_headless_browser = use_headless_browser
 
-    async def fetch_markdown(self, url: str) -> str:
+    async def fetch_markdown(self, url: str) -> ScrapingResult:
         log.info(f"Fetching markdown from {url}.")
         try:
             async with httpx.AsyncClient() as client:
@@ -35,7 +35,7 @@ class ScrapingantScraper(Scraper):
                 )
                 response.raise_for_status()
                 log.info(f"Fetched markdown from {url}.")
-                return response.text
+                return ScrapingResult(url=url, markdown=response.text)
         except httpx.RequestError as e:
             raise ScraperError(
                 http_status_code=None,
@@ -49,7 +49,7 @@ class ScrapingantScraper(Scraper):
                 error_description=f"Failed to fetch markdown from ScrapingAnt: {str(e)}",
             )
 
-    async def fetch_many_markdowns(self, urls: List[str]) -> List[str]:
+    async def fetch_many_markdowns(self, urls: List[str]) -> List[ScrapingResult]:
         deduplicated_urls = list(set(urls))
         log.info(
             f"Fetching {len(deduplicated_urls)} deduplicated markdown(s) from original {len(urls)} urls."

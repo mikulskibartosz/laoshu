@@ -49,20 +49,34 @@ def __show_results(results: List[VerificationResult], only_incorrect: bool) -> N
     console = Console()
 
     table = Table(
-        show_header=True, header_style="bold magenta", title="Verification Results"
+        show_header=True,
+        header_style="bold magenta",
+        title="Verification Results",
+        show_lines=True,
     )
     table.add_column("Claim")
     table.add_column("Sources")
     table.add_column("Is based on provided sources?")
 
     for result in results:
-        if only_incorrect and result.is_correct:
+        if only_incorrect and all(source.is_correct for source in result.sources):
             continue
+
+        first_source = result.sources[0].source
+        first_is_correct = result.sources[0].is_correct
+
         table.add_row(
             result.claim,
-            ", ".join(result.sources),
-            "Yes" if result.is_correct else "No",
+            first_source,
+            "Yes" if first_is_correct else "No",
         )
+
+        for source in result.sources[1:]:
+            table.add_row(
+                "↑",
+                source.source,
+                "Yes" if source.is_correct else "No",
+            )
 
     console.print(table)
 

@@ -1,4 +1,5 @@
 import pytest
+import asyncio
 from laoshu.scraping.scrapingant import ScrapingantScraper
 from laoshu.config import load_config
 
@@ -10,8 +11,8 @@ def test_scrapingant_fetch_markdown() -> None:
         pytest.skip("SCRAPINGANT_API_KEY not set")
 
     scraper = ScrapingantScraper(config.scrapingant_api_key)
-    markdown = scraper.fetch_markdown("https://mikulskibartosz.name")
+    result = asyncio.run(scraper.fetch_markdown("https://mikulskibartosz.name"))
 
-    assert markdown is not None
-    assert isinstance(markdown, str)
-    assert len(markdown) > 0
+    assert result is not None
+    assert isinstance(result.markdown, str)
+    assert len(result.markdown) > 0

@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from laoshu.checks.faithfulness import FaithfulnessCheck
-from typing import List
+from typing import List, Tuple
 from laoshu.config import load_config
 import os
-from laoshu.scraping.scrapingant import ScrapingantScraper
+from laoshu.scraping.scrapingant import ScrapingantScraper, ScrapingResult
 from laoshu.citations.extraction import get_citations_with_sources, Citation
 import logging
 
@@ -11,11 +11,16 @@ log = logging.getLogger(__name__)
 
 
 @dataclass
-class VerificationResult:
-    claim: str
-    sources: List[str]
+class SourceVerificationResult:
+    source: str
     is_correct: bool
     reasoning: str
+
+
+@dataclass
+class VerificationResult:
+    claim: str
+    sources: List[SourceVerificationResult]
 
 
 async def verify_citations_in_file(file: str) -> List[VerificationResult]:
@@ -46,17 +51,27 @@ async def verify_citations(text: str) -> List[VerificationResult]:
         await scraper.fetch_many_markdowns(citation.sources) for citation in citations
     ]
 
-    claims_with_sources = zip(citations, retrieved_pages)
+    claims_with_sources: List[Tuple[Citation, List[ScrapingResult]]] = list(
+        zip(citations, retrieved_pages)
+    )
 
     results = []
     for citation, pages in claims_with_sources:
-        result = await check.check(text=citation.text, context=pages)
+        results_for_citation_sources: List[SourceVerificationResult] = []
+        for page in pages:
+            result = await check.check(text=citation.text, context=[page.markdown])
+            results_for_citation_sources.append(
+                SourceVerificationResult(
+                    source=page.url,
+                    is_correct=not result.is_hallucinated,
+                    reasoning=result.reason,
+                )
+            )
+
         results.append(
             VerificationResult(
                 claim=citation.text,
-                sources=citation.sources,
-                is_correct=not result.is_hallucinated,
-                reasoning=result.reason,
+                sources=results_for_citation_sources,
             )
         )
     log.info(f"Verified {len(results)} citations.")
