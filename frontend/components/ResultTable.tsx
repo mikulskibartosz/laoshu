@@ -3,10 +3,15 @@
 import config from "@/config";
 import React from "react";
 
+interface Source {
+  source: string;
+  is_correct: boolean;
+  reasoning: string;
+}
+
 interface Claim {
   claim: string;
-  sources: string[];
-  is_correct: boolean;
+  sources: Source[];
 }
 
 interface ResultTableProps {
@@ -58,31 +63,35 @@ const ResultTable: React.FC<ResultTableProps> = ({ results }) => {
           </thead>
           <tbody>
             {results.map((result, index) => (
-              <tr key={index}>
-                <td className="max-w-md">
-                  <div className="text-sm">{result.claim}</div>
-                </td>
-                <td className="max-w-md">
-                  <div className="space-y-1">
-                    {result.sources.map((source, sourceIndex) => (
+              <React.Fragment key={index}>
+                {result.sources.map((source, sourceIndex) => (
+                  <tr key={`${index}-${sourceIndex}`}>
+                    {sourceIndex === 0 && (
+                      <td
+                        className="max-w-md"
+                        rowSpan={result.sources.length}
+                      >
+                        <div className="text-sm">{result.claim}</div>
+                      </td>
+                    )}
+                    <td className="max-w-md">
                       <a
-                        key={sourceIndex}
-                        href={source}
+                        href={source.source}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="block text-xs text-blue-600 hover:text-blue-800 underline truncate"
                       >
-                        {source}
+                        {source.source}
                       </a>
-                    ))}
-                  </div>
-                </td>
-                <td>
-                  <div className={`badge ${result.is_correct ? 'badge-success' : 'badge-error'}`}>
-                    {result.is_correct ? 'Correct' : 'Incorrect'}
-                  </div>
-                </td>
-              </tr>
+                    </td>
+                    <td>
+                      <div className={`badge ${source.is_correct ? 'badge-success' : 'badge-error'}`}>
+                        {source.is_correct ? 'Correct' : 'Incorrect'}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </React.Fragment>
             ))}
           </tbody>
         </table>
