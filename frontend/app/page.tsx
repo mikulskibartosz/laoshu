@@ -4,8 +4,7 @@ import RichInput from "@/components/RichInput";
 import ProgressIndicator from "@/components/ProgressIndicator";
 import ResultTable from "@/components/ResultTable";
 import { useRef, useState } from "react";
-import { verifyAI } from "@/libs/verify_ai";
-import { Claim } from "@/libs/verify_ai";
+import { verifyAI, Claim } from "@/libs/verify_ai";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { toast } from "react-hot-toast";
@@ -25,11 +24,18 @@ export default function Page() {
     }
 
     setShowProgress(true);
-    const results = await verifyAI(markdown);
-    setResults(results);
+    setResults([]); // Reset results for new check
 
-    richInputRef.current.setMarkdownValue(markdown);
-    setShowProgress(false);
+    try {
+      for await (const claim of verifyAI(markdown)) {
+        setResults(prev => [...prev, claim]);
+        console.log(claim);
+      }
+    } catch (error) {
+      toast.error("Error verifying AI content");
+    } finally {
+      setShowProgress(false);
+    }
   }
 
   return (

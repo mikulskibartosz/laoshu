@@ -10,7 +10,7 @@ interface RichInputProps {
   disabled?: boolean;
 }
 
-const RichInput = forwardRef<{ getMarkdownValue: () => string; setMarkdownValue: (value: string) => void }, RichInputProps>(({
+const RichInput = forwardRef<{ getMarkdownValue: () => string }, RichInputProps>(({
   onChange,
   placeholder = "Type or paste content here...",
   className = "",
@@ -126,11 +126,6 @@ const RichInput = forwardRef<{ getMarkdownValue: () => string; setMarkdownValue:
   useImperativeHandle(ref, () => ({
     getMarkdownValue: () => {
       return getMarkdownValue();
-    },
-    setMarkdownValue: (value: string) => {
-      if (contentRef.current) {
-        contentRef.current.innerHTML = value;
-      }
     },
   }));
 

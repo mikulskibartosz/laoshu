@@ -2,18 +2,8 @@
 
 import config from "@/config";
 import React from "react";
-import CheckResultBadge, { Status } from "./CheckResultBadge";
-
-interface Source {
-  source: string;
-  status: Status;
-  reasoning: string;
-}
-
-interface Claim {
-  claim: string;
-  sources: Source[];
-}
+import CheckResultBadge from "./CheckResultBadge";
+import { Claim } from "@/libs/verify_ai";
 
 interface ResultTableProps {
   results: Claim[];

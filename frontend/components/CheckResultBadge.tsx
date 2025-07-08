@@ -1,30 +1,25 @@
+import { SourceVerificationResult } from "@/libs/verify_ai";
 import React from "react";
 
-enum Status {
-  CHECK_PENDING = "CHECK_PENDING",
-  INCORRECT = "INCORRECT",
-  CORRECT = "CORRECT",
-}
-
 interface CheckResultBadgeProps {
-  status: Status;
+  status: SourceVerificationResult["status"];
   className?: string;
 }
 
 const CheckResultBadge: React.FC<CheckResultBadgeProps> = ({ status, className = "" }) => {
-  const getBadgeConfig = (status: Status) => {
+  const getBadgeConfig = (status: SourceVerificationResult["status"]) => {
     switch (status) {
-      case Status.CORRECT:
+      case "CORRECT":
         return {
           label: "Correct",
           classes: "badge-success"
         };
-      case Status.INCORRECT:
+      case "INCORRECT":
         return {
           label: "Incorrect",
           classes: "badge-error"
         };
-      case Status.CHECK_PENDING:
+      case "CHECK_PENDING":
         return {
           label: "Checking...",
           classes: "badge-neutral"
@@ -47,5 +42,3 @@ const CheckResultBadge: React.FC<CheckResultBadgeProps> = ({ status, className =
 };
 
 export default CheckResultBadge;
-export { Status };
-
