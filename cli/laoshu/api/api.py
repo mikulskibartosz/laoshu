@@ -1,7 +1,15 @@
+from enum import Enum
 from typing import List
 from fastapi import FastAPI
 from pydantic import BaseModel
 from laoshu.verification.verification import verify_citations
+
+
+
+class Status(Enum):
+    CHECK_PENDING = "CHECK_PENDING"
+    INCORRECT = "INCORRECT"
+    CORRECT = "CORRECT"
 
 
 class CheckRequest(BaseModel):
@@ -11,7 +19,7 @@ class CheckRequest(BaseModel):
 
 class SourceVerificationResult(BaseModel):
     source: str
-    is_correct: bool
+    status: Status
     reasoning: str
 
 
@@ -39,7 +47,7 @@ async def check(request: CheckRequest) -> List[CheckResponse]:
             claim_results.append(
                 SourceVerificationResult(
                     source=source.source,
-                    is_correct=source.is_correct,
+                    status=Status.CORRECT if source.is_correct else Status.INCORRECT,
                     reasoning=source.reasoning,
                 )
             )

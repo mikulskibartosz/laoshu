@@ -2,10 +2,11 @@
 
 import config from "@/config";
 import React from "react";
+import CheckResultBadge, { Status } from "./CheckResultBadge";
 
 interface Source {
   source: string;
-  is_correct: boolean;
+  status: Status;
   reasoning: string;
 }
 
@@ -85,9 +86,7 @@ const ResultTable: React.FC<ResultTableProps> = ({ results }) => {
                       </a>
                     </td>
                     <td>
-                      <div className={`badge ${source.is_correct ? 'badge-success' : 'badge-error'}`}>
-                        {source.is_correct ? 'Correct' : 'Incorrect'}
-                      </div>
+                      <CheckResultBadge status={source.status} />
                     </td>
                   </tr>
                 ))}
