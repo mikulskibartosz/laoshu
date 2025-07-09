@@ -56,6 +56,8 @@ MOCK_RESPONSE: List[Dict[str, Any]] = [
     },
 ]
 
+USE_MOCK = True
+
 
 class Status(Enum):
     CHECK_PENDING = "CHECK_PENDING"
@@ -86,9 +88,8 @@ log = logging.getLogger(__name__)
 @app.post("/check")
 async def check(request: CheckRequest) -> StreamingResponse:
     log.info(f"Received request: {request}")
-    use_mock = False
 
-    if use_mock:
+    if USE_MOCK:
 
         async def stream_mock_response(
             log: logging.Logger,
