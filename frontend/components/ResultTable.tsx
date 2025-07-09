@@ -8,9 +8,14 @@ import { Claim } from "@/libs/verify_ai";
 interface ResultTableProps {
   results: Claim[];
   disableButtons?: boolean;
+  lastUpdatedClaim?: string | null;
 }
 
-const ResultTable: React.FC<ResultTableProps> = ({ results, disableButtons = false }) => {
+const ResultTable: React.FC<ResultTableProps> = ({
+  results,
+  disableButtons = false,
+  lastUpdatedClaim = null,
+}) => {
   if (!results || results.length === 0) {
     return null;
   }
@@ -24,12 +29,18 @@ const ResultTable: React.FC<ResultTableProps> = ({ results, disableButtons = fal
       <div className="w-full flex justify-between items-center mb-4">
         <button
           className="btn btn-outline"
-          onClick={() => { window.location.href = "/"; }}
+          onClick={() => {
+            window.location.href = "/";
+          }}
           disabled={disableButtons}
         >
           Run another check
         </button>
-        <button className="btn btn-outline" onClick={handlePrintPDF} disabled={disableButtons}>
+        <button
+          className="btn btn-outline"
+          onClick={handlePrintPDF}
+          disabled={disableButtons}
+        >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
@@ -55,43 +66,70 @@ const ResultTable: React.FC<ResultTableProps> = ({ results, disableButtons = fal
             </tr>
           </thead>
           <tbody>
-            {results.map((result, index) => (
-              <React.Fragment key={index}>
-                {result.sources.map((source, sourceIndex) => (
-                  <tr key={`${index}-${sourceIndex}`}>
-                    {sourceIndex === 0 && (
-                      <td
-                        className="max-w-md"
-                        rowSpan={result.sources.length}
-                      >
-                        <div className="text-sm">{result.claim}</div>
+            {results.map((result, index) => {
+              // Determine if this claim is the last updated one
+              const isLastUpdated =
+                lastUpdatedClaim &&
+                result.claim === lastUpdatedClaim;
+              return (
+                <React.Fragment key={index}>
+                  {result.sources.map((source, sourceIndex) => (
+                    <tr
+                      key={`${index}-${sourceIndex}`}
+                      // Only add the data attribute to the first row of the claim
+                      {...(sourceIndex === 0 && isLastUpdated
+                        ? {
+                            "data-claim-row": encodeURIComponent(result.claim),
+                          }
+                        : {})}
+                    >
+                      {sourceIndex === 0 && (
+                        <td
+                          className="max-w-md"
+                          rowSpan={result.sources.length}
+                        >
+                          <div className="text-sm">{result.claim}</div>
+                        </td>
+                      )}
+                      <td className="max-w-md">
+                        <a
+                          href={source.source}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="block text-xs text-blue-600 hover:text-blue-800 underline truncate"
+                        >
+                          {source.source}
+                        </a>
                       </td>
-                    )}
-                    <td className="max-w-md">
-                      <a
-                        href={source.source}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block text-xs text-blue-600 hover:text-blue-800 underline truncate"
-                      >
-                        {source.source}
-                      </a>
-                    </td>
-                    <td>
-                      <CheckResultBadge status={source.status} />
-                    </td>
-                  </tr>
-                ))}
-              </React.Fragment>
-            ))}
+                      <td>
+                        <CheckResultBadge status={source.status} />
+                      </td>
+                    </tr>
+                  ))}
+                </React.Fragment>
+              );
+            })}
           </tbody>
         </table>
       </div>
       <div className="mt-4 text-sm text-base-content/70">
-        <p>Incorrect means the claim isn&apos;t backed by the provided sources.<br/>It may be hallucinated, or it may still be true, but the AI provided the wrong source.</p>
+        <p>
+          Incorrect means the claim isn&apos;t backed by the provided sources.
+          <br />
+          It may be hallucinated, or it may still be true, but the AI provided
+          the wrong source.
+        </p>
       </div>
       <div className="mt-4 text-sm text-base-content/70">
-        Did Lǎoshǔ miss something? <a href={config.repositoryUrlNewIssue} target="_blank" rel="noopener noreferrer" className="link link-hover font-semibold">Report an issue</a>
+        Did Lǎoshǔ miss something?{" "}
+        <a
+          href={config.repositoryUrlNewIssue}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="link link-hover font-semibold"
+        >
+          Report an issue
+        </a>
       </div>
     </div>
   );
