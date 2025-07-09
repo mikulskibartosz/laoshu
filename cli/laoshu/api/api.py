@@ -1,15 +1,14 @@
 import asyncio
-import random
 import logging
 from enum import Enum
-from typing import List
+from typing import List, Dict, Any, AsyncGenerator
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from laoshu.verification.verification import verify_citations
+from laoshu.verification.verification import stream_verify_citations
 
 
-MOCK_RESPONSE = [
+MOCK_RESPONSE: List[Dict[str, Any]] = [
     {
         "claim": "The Great Wall of China is visible from space with the naked eye.",
         "sources": [
@@ -58,36 +57,6 @@ MOCK_RESPONSE = [
 ]
 
 
-async def stream_mock_response(log):
-    log.info("Streaming mock response")
-    response = []
-    for result in MOCK_RESPONSE:
-        result_copy = result.copy()
-        result_copy["sources"] = []
-        for source in result["sources"]:
-            source_copy = source.copy()
-            source_copy["status"] = Status.CHECK_PENDING
-            result_copy["sources"].append(source_copy)
-        response.append(result_copy)
-
-    log.info(f"Preapared {len(response)} check pending responses")
-
-    for obj in MOCK_RESPONSE:
-        response.append(obj)
-
-    log.info(f"Preapared {len(response)} final responses")
-
-    for index, obj in enumerate(response):
-        log.info(f"Sending response {index+1}/{len(response)}")
-        pydantic_obj = CheckResponse(**obj)
-        yield pydantic_obj.model_dump_json() + "\n"
-        await asyncio.sleep(
-            random.uniform(
-                0.1 + (index / len(response)) * 2, 1.5 + (index / len(response)) * 3
-            )
-        )
-
-
 class Status(Enum):
     CHECK_PENDING = "CHECK_PENDING"
     INCORRECT = "INCORRECT"
@@ -117,52 +86,82 @@ log = logging.getLogger(__name__)
 @app.post("/check")
 async def check(request: CheckRequest) -> StreamingResponse:
     log.info(f"Received request: {request}")
-    results = await verify_citations(request.text)
+    use_mock = False
 
-    response = []
-    for result in results:
-        if request.only_incorrect and all(
-            source.is_correct for source in result.sources
-        ):
-            continue
+    if use_mock:
 
-        claim_results = []
-        for source in result.sources:
-            claim_results.append(
-                SourceVerificationResult(
-                    source=source.source,
-                    status=Status.CORRECT if source.is_correct else Status.INCORRECT,
-                    reasoning=source.reasoning,
-                )
-            )
-        response.append(
-            CheckResponse(
-                claim=result.claim,
-                sources=claim_results,
-            )
-        )
+        async def stream_mock_response(
+            log: logging.Logger,
+        ) -> AsyncGenerator[str, None]:
+            for result in MOCK_RESPONSE:
+                for source in result["sources"]:
+                    pending = result.copy()
+                    pending["sources"] = [source.copy()]
+                    pending["sources"][0]["status"] = Status.CHECK_PENDING
+                    log.info(
+                        f"Yielding mock pending for claim: {pending['claim']}, source: {pending['sources'][0]['source']}"
+                    )
+                    yield CheckResponse(
+                        claim=pending["claim"],
+                        sources=[
+                            SourceVerificationResult(
+                                source=pending["sources"][0]["source"],
+                                status=Status.CHECK_PENDING,
+                                reasoning=pending["sources"][0]["reasoning"],
+                            )
+                        ],
+                    ).model_dump_json() + "\n"
+                    await asyncio.sleep(0.1)
+                    # Now yield the final result
+                    final = result.copy()
+                    final["sources"] = [source.copy()]
+                    log.info(
+                        f"Yielding mock final for claim: {final['claim']}, source: {final['sources'][0]['source']}"
+                    )
+                    yield CheckResponse(
+                        claim=final["claim"],
+                        sources=[
+                            SourceVerificationResult(
+                                source=final["sources"][0]["source"],
+                                status=Status(final["sources"][0]["status"]),
+                                reasoning=final["sources"][0]["reasoning"],
+                            )
+                        ],
+                    ).model_dump_json() + "\n"
+                    await asyncio.sleep(0.1)
 
-    # pretend to be streaming, so the frontend can handle a change of API
-    log.info(f"Pretending to be streaming {len(response)} responses")
-    in_progress_responses = []
-    for obj in response:
-        in_progress = obj.copy()
-        in_progress.sources = []
-        for source in obj.sources:
-            source_copy = source.copy()
-            source_copy.status = Status.CHECK_PENDING
-            in_progress.sources.append(source_copy)
-        in_progress_responses.append(in_progress)
+        stream_fn = stream_mock_response(log)
+    else:
 
-    log.info(f"Prepared {len(in_progress_responses)} in progress responses")
+        async def stream_real(log: logging.Logger) -> AsyncGenerator[str, None]:
+            try:
+                async for result in stream_verify_citations(request.text):
+                    # Map VerificationResult to CheckResponse
+                    claim = result.claim
+                    sources = [
+                        SourceVerificationResult(
+                            source=s.source,
+                            status=(
+                                Status.CHECK_PENDING
+                                if s.is_correct is None
+                                else (
+                                    Status.CORRECT if s.is_correct else Status.INCORRECT
+                                )
+                            ),
+                            reasoning=s.reasoning,
+                        )
+                        for s in result.sources
+                    ]
+                    log.info(
+                        f"Yielding real result for claim: {claim}, sources: {[s.source for s in result.sources]}"
+                    )
+                    yield CheckResponse(
+                        claim=claim, sources=sources
+                    ).model_dump_json() + "\n"
+            except Exception as e:
+                log.error(f"Error in streaming: {e}")
+                # Interrupt the stream with an error message
+                yield '{"error": "Internal server error"}\n'
 
-    async def stream_response(log):
-        everything = in_progress_responses.copy()
-        everything.extend(response)
-        log.info(f"Sending {len(everything)} responses")
-        for index, obj in enumerate(everything):
-            log.info(f"Sending response {index+1}/{len(everything)}")
-            yield obj.model_dump_json() + "\n"
-            await asyncio.sleep(random.uniform(0.1 + (index / len(everything)) * 2, 1.5 + (index / len(everything)) * 3))
-
-    return StreamingResponse(stream_response(log), media_type="application/json")
+        stream_fn = stream_real(log)
+    return StreamingResponse(stream_fn, media_type="application/json")
