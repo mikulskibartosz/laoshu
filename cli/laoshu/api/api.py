@@ -54,9 +54,54 @@ MOCK_RESPONSE: List[Dict[str, Any]] = [
             },
         ],
     },
+    {
+        "claim": "Lightning never strikes the same place twice.",
+        "sources": [
+            {
+                "source": "https://www.weather.gov/safety/lightning-myths",
+                "status": "INCORRECT",
+                "reasoning": "The National Weather Service states that lightning can and does strike the same place more than once, especially tall, isolated objects.",
+            },
+            {
+                "source": "https://www.nationalgeographic.com/science/article/lightning-strikes-same-place-twice",
+                "status": "INCORRECT",
+                "reasoning": "National Geographic explains that lightning often strikes the same place repeatedly, particularly tall structures like skyscrapers.",
+            },
+        ],
+    },
+    {
+        "claim": "Bats are blind.",
+        "sources": [
+            {
+                "source": "https://www.britannica.com/story/are-bats-really-blind",
+                "status": "INCORRECT",
+                "reasoning": "Britannica clarifies that bats are not blind; most species have good eyesight and use echolocation to navigate in the dark.",
+            },
+            {
+                "source": "https://www.nationalgeographic.com/animals/mammals/facts/bats",
+                "status": "CORRECT",
+                "reasoning": "National Geographic confirms that bats can see and are not blind, debunking the common myth.",
+            },
+        ],
+    },
+    {
+        "claim": "Goldfish have a three-second memory.",
+        "sources": [
+            {
+                "source": "https://www.scientificamerican.com/article/fact-or-fiction-goldfish-have-a-three-second-memory/",
+                "status": "CORRECT",
+                "reasoning": "Scientific American reports that goldfish have a memory span of months, not seconds, and can be trained to respond to various signals.",
+            },
+            {
+                "source": "https://www.bbc.com/news/magazine-24621394",
+                "status": "INCORRECT",
+                "reasoning": "BBC News explains that goldfish can remember things for weeks or months, disproving the three-second memory myth.",
+            },
+        ],
+    },
 ]
 
-USE_MOCK = False
+USE_MOCK = True
 
 
 class Status(Enum):
@@ -94,6 +139,7 @@ async def check(request: CheckRequest) -> StreamingResponse:
         async def stream_mock_response(
             log: logging.Logger,
         ) -> AsyncGenerator[str, None]:
+            import random
             for result in MOCK_RESPONSE:
                 for source in result["sources"]:
                     pending = result.copy()
@@ -129,7 +175,7 @@ async def check(request: CheckRequest) -> StreamingResponse:
                             )
                         ],
                     ).model_dump_json() + "\n"
-                    await asyncio.sleep(0.1)
+                    await asyncio.sleep(random.uniform(0.1, 0.5))
 
         stream_fn = stream_mock_response(log)
     else:
