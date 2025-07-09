@@ -18,7 +18,7 @@ One slip, and your credibility's gone.
 
 ### With Laoshu.ai
 
-![With Laoshu.ai](docs/with_laoshu.png)
+![With Laoshu.ai](docs/laoshu_usage.gif)
 
 ---
 
