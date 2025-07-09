@@ -3,6 +3,7 @@ import httpx
 from asyncio import gather
 import logging
 from .interface import Scraper, ScraperError, ScrapingResult
+from .cache import ScrapingCache, InMemoryScrapingCache
 
 log = logging.getLogger(__name__)
 
@@ -14,16 +15,23 @@ class ScrapingantScraper(Scraper):
         timeout_seconds: int = 60,
         concurrent_requests: bool = False,
         use_headless_browser: bool = False,
+        cache: ScrapingCache = InMemoryScrapingCache(),
     ):
         self.api_key = api_key
         self.timeout_seconds = timeout_seconds
         self.concurrent_requests = concurrent_requests
         self.use_headless_browser = use_headless_browser
+        self.cache = cache
 
     async def fetch_markdown(self, url: str) -> ScrapingResult:
         log.info(f"Fetching markdown from {url}.")
         try:
             async with httpx.AsyncClient() as client:
+                cached_markdown = self.cache.get(url)
+                if cached_markdown is not None:
+                    log.info(f"Returning cached markdown for {url}.")
+                    return ScrapingResult(url=url, markdown=cached_markdown)
+
                 response = await client.get(
                     "https://api.scrapingant.com/v2/markdown",
                     params={
@@ -35,6 +43,7 @@ class ScrapingantScraper(Scraper):
                 )
                 response.raise_for_status()
                 log.info(f"Fetched markdown from {url}.")
+                self.cache.set(url, response.text)
                 return ScrapingResult(url=url, markdown=response.text)
         except httpx.RequestError as e:
             raise ScraperError(
