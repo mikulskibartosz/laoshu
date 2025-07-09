@@ -7,15 +7,24 @@ from laoshu.scraping.scrapingant import ScrapingantScraper
 from laoshu.citations.extraction import get_citations_with_sources, Citation
 import logging
 import asyncio
+from enum import Enum
 
 log = logging.getLogger(__name__)
+
+
+class VerificationStatus(Enum):
+    INCORRECT = "INCORRECT"
+    CORRECT = "CORRECT"
+    CHECK_PENDING = "CHECK_PENDING"
+    CANNOT_RETRIEVE = "CANNOT_RETRIEVE"
 
 
 @dataclass
 class SourceVerificationResult:
     source: str
-    is_correct: Optional[bool]
+    status: VerificationStatus
     reasoning: str
+    error_description: Optional[str]
 
 
 @dataclass
@@ -34,7 +43,7 @@ async def verify_citations_in_file(file: str) -> List[VerificationResult]:
     results = []
     async for result in stream_verify_citations(text):
         # Only collect final results where all sources have is_correct set (i.e., not None)
-        if all(s.is_correct is not None for s in result.sources):
+        if all(s.status != VerificationStatus.CHECK_PENDING for s in result.sources):
             results.append(result)
     return results
 
@@ -72,21 +81,45 @@ async def stream_verify_citations(
         try:
             async with semaphore:
                 page = (await scraper.fetch_many_markdowns([source_url]))[0]
-            result = await check.check(text=citation.text, context=[page.markdown])
+
+            if not page.is_success:
+                await queue.put(
+                    VerificationResult(
+                        claim=citation.text,
+                        sources=[
+                            SourceVerificationResult(
+                                source=source_url,
+                                status=VerificationStatus.CANNOT_RETRIEVE,
+                                reasoning="",
+                                error_description=f"{page.status_code}: {page.error_description}",
+                            )
+                        ],
+                    )
+                )
+                return
+
+            markdown = page.markdown or ""
+            result = await check.check(text=citation.text, context=[markdown])
             await queue.put(
                 VerificationResult(
                     claim=citation.text,
                     sources=[
                         SourceVerificationResult(
                             source=source_url,
-                            is_correct=not result.is_hallucinated,
+                            status=(
+                                VerificationStatus.CORRECT
+                                if not result.is_hallucinated
+                                else VerificationStatus.INCORRECT
+                            ),
                             reasoning=result.reason,
+                            error_description=None,
                         )
                     ],
                 )
             )
         except Exception as e:
-            log.error(f"Error verifying {citation.text} / {source_url}: {e}")
+            log.error(f"Error verifying  {source_url}: {e}")
+            log.exception(e)
             await queue.put(e)
 
     # 1. Immediately yield all pending statuses and start background tasks
@@ -100,8 +133,9 @@ async def stream_verify_citations(
                 sources=[
                     SourceVerificationResult(
                         source=source_url,
-                        is_correct=None,
+                        status=VerificationStatus.CHECK_PENDING,
                         reasoning="",
+                        error_description=None,
                     )
                 ],
             )

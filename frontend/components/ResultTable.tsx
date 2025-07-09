@@ -63,6 +63,7 @@ const ResultTable: React.FC<ResultTableProps> = ({
               <th className="text-left">Claim</th>
               <th className="text-left">Sources</th>
               <th className="text-left">Status</th>
+              <th className="text-left">Status explanation</th>
             </tr>
           </thead>
           <tbody>
@@ -103,6 +104,13 @@ const ResultTable: React.FC<ResultTableProps> = ({
                       </td>
                       <td>
                         <CheckResultBadge status={source.status} />
+                      </td>
+                      <td>
+                        {source.errorDescription && (
+                          <div className="text-xs text-base-content/70">
+                            {source.errorDescription}
+                          </div>
+                        )}
                       </td>
                     </tr>
                   ))}

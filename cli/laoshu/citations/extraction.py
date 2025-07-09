@@ -51,10 +51,12 @@ def _split_paragraphs(article: str) -> List[str]:
 
 def get_citations_with_sources(article: str) -> List[Citation]:
     citations: List[Citation] = []
+    total_words = 0
 
     paragraphs = _split_paragraphs(article)
 
     for paragraph in paragraphs:
+        total_words += len(paragraph.split())
         citation_text = None
         sources = []
         while paragraph_link := _strip_last_link(paragraph):
@@ -64,5 +66,7 @@ def get_citations_with_sources(article: str) -> List[Citation]:
         if citation_text:
             citations.append(Citation(text=citation_text, sources=sources[::-1]))
 
-    log.info(f"Extracted {len(citations)} citations.")
+    log.info(
+        f"Extracted {len(citations)} citations with total length {total_words} words."
+    )
     return citations

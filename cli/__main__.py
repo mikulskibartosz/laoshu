@@ -7,6 +7,7 @@ from laoshu.config.logger import setup_logger
 from laoshu.verification.verification import (
     verify_citations_in_file,
     VerificationResult,
+    VerificationStatus,
 )
 
 
@@ -61,13 +62,15 @@ def __show_results(results: List[VerificationResult], only_incorrect: bool) -> N
     is_any_citation_incorrect = False
     for result in results:
         is_any_citation_incorrect = is_any_citation_incorrect or any(
-            not source.is_correct for source in result.sources
+            source.status == VerificationStatus.INCORRECT for source in result.sources
         )
-        if only_incorrect and all(source.is_correct for source in result.sources):
+        if only_incorrect and all(
+            source.status == VerificationStatus.CORRECT for source in result.sources
+        ):
             continue
 
         first_source = result.sources[0].source
-        first_is_correct = result.sources[0].is_correct
+        first_is_correct = result.sources[0].status == VerificationStatus.CORRECT
 
         table.add_row(
             result.claim,
@@ -79,7 +82,7 @@ def __show_results(results: List[VerificationResult], only_incorrect: bool) -> N
             table.add_row(
                 "↑",
                 source.source,
-                "Yes" if source.is_correct else "No",
+                "Yes" if source.status == VerificationStatus.CORRECT else "No",
             )
 
     console.print(table)

@@ -5,8 +5,11 @@ from typing import Optional, List
 
 @dataclass
 class ScrapingResult:
+    is_success: bool
     url: str
-    markdown: str
+    markdown: Optional[str]
+    status_code: Optional[int]
+    error_description: Optional[str]
 
 
 @dataclass

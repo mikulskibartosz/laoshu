@@ -30,7 +30,13 @@ class ScrapingantScraper(Scraper):
                 cached_markdown = self.cache.get(url)
                 if cached_markdown is not None:
                     log.info(f"Returning cached markdown for {url}.")
-                    return ScrapingResult(url=url, markdown=cached_markdown)
+                    return ScrapingResult(
+                        is_success=True,
+                        url=url,
+                        markdown=cached_markdown,
+                        status_code=None,
+                        error_description=None,
+                    )
 
                 response = await client.get(
                     "https://api.scrapingant.com/v2/markdown",
@@ -42,20 +48,34 @@ class ScrapingantScraper(Scraper):
                     timeout=self.timeout_seconds,
                 )
                 response.raise_for_status()
-                log.info(f"Fetched markdown from {url}.")
-                self.cache.set(url, response.text)
-                return ScrapingResult(url=url, markdown=response.text)
+                response_text = response.text
+                response_text_words_count = len(response_text.split())
+                log.info(
+                    f"Fetched markdown from {url} with {response_text_words_count} words."
+                )
+                self.cache.set(url, response_text)
+                return ScrapingResult(
+                    is_success=True,
+                    url=url,
+                    markdown=response_text,
+                    status_code=response.status_code,
+                    error_description=None,
+                )
         except httpx.RequestError as e:
+            # cannot even send the request, so we crash here.
             raise ScraperError(
                 http_status_code=None,
                 is_internal_laoshu_error=False,
                 error_description=f"Failed to send the fetch markdown request to ScrapingAnt: {str(e)}",
             )
         except httpx.HTTPStatusError as e:
-            raise ScraperError(
-                http_status_code=e.response.status_code,
-                is_internal_laoshu_error=False,
-                error_description=f"Failed to fetch markdown from ScrapingAnt: {str(e)}",
+            # got a response, but it's not 200. We can work with that.
+            return ScrapingResult(
+                is_success=False,
+                url=url,
+                markdown=None,
+                status_code=e.response.status_code,
+                error_description=str(e),
             )
 
     async def fetch_many_markdowns(self, urls: List[str]) -> List[ScrapingResult]:

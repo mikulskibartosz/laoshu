@@ -24,6 +24,11 @@ const CheckResultBadge: React.FC<CheckResultBadgeProps> = ({ status, className =
           label: "Checking...",
           classes: "badge-neutral"
         };
+      case "CANNOT_RETRIEVE":
+        return {
+          label: "Error",
+          classes: "badge-error"
+        };
       default:
         return {
           label: "Unknown",
