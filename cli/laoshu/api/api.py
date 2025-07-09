@@ -117,44 +117,52 @@ log = logging.getLogger(__name__)
 @app.post("/check")
 async def check(request: CheckRequest) -> StreamingResponse:
     log.info(f"Received request: {request}")
-    # results = await verify_citations(request.text)
+    results = await verify_citations(request.text)
 
-    # response = []
-    # for result in results:
-    #     if request.only_incorrect and all(
-    #         source.is_correct for source in result.sources
-    #     ):
-    #         continue
+    response = []
+    for result in results:
+        if request.only_incorrect and all(
+            source.is_correct for source in result.sources
+        ):
+            continue
 
-    #     claim_results = []
-    #     for source in result.sources:
-    #         claim_results.append(
-    #             SourceVerificationResult(
-    #                 source=source.source,
-    #                 status=Status.CORRECT if source.is_correct else Status.INCORRECT,
-    #                 reasoning=source.reasoning,
-    #             )
-    #         )
-    #     response.append(
-    #         CheckResponse(
-    #             claim=result.claim,
-    #             sources=claim_results,
-    #         )
-    #     )
+        claim_results = []
+        for source in result.sources:
+            claim_results.append(
+                SourceVerificationResult(
+                    source=source.source,
+                    status=Status.CORRECT if source.is_correct else Status.INCORRECT,
+                    reasoning=source.reasoning,
+                )
+            )
+        response.append(
+            CheckResponse(
+                claim=result.claim,
+                sources=claim_results,
+            )
+        )
 
-    # # pretend to be streaming, so the frontend can handle a change of API
-    # in_progress_responses = []
-    # for obj in response:
-    #     in_progress = obj.copy()
-    #     for source in in_progress.sources:
-    #         source.status = Status.CHECK_PENDING
-    #     in_progress_responses.append(in_progress)
+    # pretend to be streaming, so the frontend can handle a change of API
+    log.info(f"Pretending to be streaming {len(response)} responses")
+    in_progress_responses = []
+    for obj in response:
+        in_progress = obj.copy()
+        in_progress.sources = []
+        for source in obj.sources:
+            source_copy = source.copy()
+            source_copy.status = Status.CHECK_PENDING
+            in_progress.sources.append(source_copy)
+        in_progress_responses.append(in_progress)
 
-    # async def stream_response():
-    #     everything = in_progress_responses.copy()
-    #     everything.extend(response)
-    #     for obj in everything:
-    #         yield obj.model_dump_json() + "\n"
-    #         await asyncio.sleep(0.1)
+    log.info(f"Prepared {len(in_progress_responses)} in progress responses")
 
-    return StreamingResponse(stream_mock_response(log), media_type="application/json")
+    async def stream_response(log):
+        everything = in_progress_responses.copy()
+        everything.extend(response)
+        log.info(f"Sending {len(everything)} responses")
+        for index, obj in enumerate(everything):
+            log.info(f"Sending response {index+1}/{len(everything)}")
+            yield obj.model_dump_json() + "\n"
+            await asyncio.sleep(random.uniform(0.1 + (index / len(everything)) * 2, 1.5 + (index / len(everything)) * 3))
+
+    return StreamingResponse(stream_response(log), media_type="application/json")
