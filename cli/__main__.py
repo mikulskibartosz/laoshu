@@ -58,7 +58,11 @@ def __show_results(results: List[VerificationResult], only_incorrect: bool) -> N
     table.add_column("Sources")
     table.add_column("Is based on provided sources?")
 
+    is_any_citation_incorrect = False
     for result in results:
+        is_any_citation_incorrect = is_any_citation_incorrect or any(
+            not source.is_correct for source in result.sources
+        )
         if only_incorrect and all(source.is_correct for source in result.sources):
             continue
 
@@ -79,6 +83,9 @@ def __show_results(results: List[VerificationResult], only_incorrect: bool) -> N
             )
 
     console.print(table)
+
+    if is_any_citation_incorrect:
+        exit(1)
 
 
 if __name__ == "__main__":
