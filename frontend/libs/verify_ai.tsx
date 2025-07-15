@@ -1,8 +1,14 @@
+export interface FaithfulnessError {
+  errorType: "MISINTERPRETATION_OF_STATISTICS" | "WRONG_DATES_TIMELINE" | "EXAGGERATED_NUMBERS" | "INCORRECT_NAMES_IDENTIFIERS" | "MISATTRIBUTED_QUOTES" | "OUT_OF_CONTEXT_INFORMATION" | "WRONG_SOURCE_ATTRIBUTION" | "FABRICATED_CITATIONS" | "PARTIAL_TRUTH_DISTORTION" | "SPECULATION_AS_FACT" | "OUTDATED_INFORMATION" | "MISSING_QUALIFICATIONS" | "FALSE_CAUSATION" | "OVERGENERALIZATION" | "CHERRY_PICKING" | "MISINTERPRETATION_OF_STATISTICS";
+  reasoning: string;
+}
+
 export interface SourceVerificationResult {
   source: string;
   status: "CHECK_PENDING" | "INCORRECT" | "CORRECT" | "CANNOT_RETRIEVE" | "BOT_TRAFFIC_DETECTED";
   reasoning: string;
   errorDescription?: string;
+  faithfulnessErrors: FaithfulnessError[];
 }
 
 export interface Claim {
@@ -22,6 +28,7 @@ function mapSourceErrorDescription(src: any) {
     return {
       ...src,
       errorDescription: src.error_description,
+      faithfulnessErrors: src.faithfulness_errors,
     };
   }
   return src;

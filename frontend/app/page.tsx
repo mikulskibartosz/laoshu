@@ -76,7 +76,7 @@ export default function Page() {
           setLastUpdatedClaim(claim.claim);
           return merged;
         });
-        console.log(claim);
+        console.log("Added claim", claim);
       }
     } catch (error) {
       toast.error("Error verifying AI content");

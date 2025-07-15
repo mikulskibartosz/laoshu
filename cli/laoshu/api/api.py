@@ -4,7 +4,12 @@ from typing import List, Dict, Any, AsyncGenerator, Optional
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from laoshu.verification.verification import stream_verify_citations, VerificationStatus
+from laoshu.baml_client.types import FaithfulnessErrorType
+from laoshu.verification.verification import (
+    stream_verify_citations,
+    VerificationStatus,
+    ErrorVerificationResult,
+)
 
 
 MOCK_RESPONSE: List[Dict[str, Any]] = [
@@ -63,11 +68,23 @@ MOCK_RESPONSE: List[Dict[str, Any]] = [
                 "source": "https://www.weather.gov/safety/lightning-myths",
                 "status": "INCORRECT",
                 "reasoning": "The National Weather Service states that lightning can and does strike the same place more than once, especially tall, isolated objects.",
+                "faithfulness_errors": [
+                    {
+                        "error_type": FaithfulnessErrorType.SPECULATION_AS_FACT,
+                        "reasoning": "Lightning does strike the same place more than once, so the claim is factually incorrect."
+                    }
+                ],
             },
             {
                 "source": "https://www.nationalgeographic.com/science/article/lightning-strikes-same-place-twice",
                 "status": "INCORRECT",
                 "reasoning": "National Geographic explains that lightning often strikes the same place repeatedly, particularly tall structures like skyscrapers.",
+                "faithfulness_errors": [
+                    {
+                        "error_type": FaithfulnessErrorType.OUT_OF_CONTEXT_INFORMATION,
+                        "reasoning": "Lightning can and does strike the same place multiple times, so the claim is factually incorrect."
+                    }
+                ],
             },
         ],
     },
@@ -78,6 +95,12 @@ MOCK_RESPONSE: List[Dict[str, Any]] = [
                 "source": "https://www.britannica.com/story/are-bats-really-blind",
                 "status": "INCORRECT",
                 "reasoning": "Britannica clarifies that bats are not blind; most species have good eyesight and use echolocation to navigate in the dark.",
+                "faithfulness_errors": [
+                    {
+                        "error_type": FaithfulnessErrorType.OUT_OF_CONTEXT_INFORMATION,
+                        "reasoning": "Bats are not blind; most have good eyesight, so the claim is factually incorrect."
+                    }
+                ],
             },
             {
                 "source": "https://www.nationalgeographic.com/animals/mammals/facts/bats",
@@ -98,6 +121,16 @@ MOCK_RESPONSE: List[Dict[str, Any]] = [
                 "source": "https://www.bbc.com/news/magazine-24621394",
                 "status": "INCORRECT",
                 "reasoning": "BBC News explains that goldfish can remember things for weeks or months, disproving the three-second memory myth.",
+                "faithfulness_errors": [
+                    {
+                        "error_type": FaithfulnessErrorType.OUTDATED_INFORMATION,
+                        "reasoning": "Goldfish have a memory span much longer than three seconds, so the claim is factually incorrect."
+                    },
+                    {
+                        "error_type": FaithfulnessErrorType.MISINTERPRETATION_OF_STATISTICS,
+                        "reasoning": "The claim misrepresents the memory span of goldfish, which is much longer than three seconds."
+                    }
+                ],
             },
         ],
     },
@@ -116,6 +149,7 @@ class SourceVerificationResult(BaseModel):
     status: VerificationStatus
     reasoning: str
     error_description: Optional[str] = None
+    faithfulness_errors: List[ErrorVerificationResult] = []
 
 
 class CheckResponse(BaseModel):
@@ -178,6 +212,9 @@ async def check(request: CheckRequest) -> StreamingResponse:
                                 error_description=final["sources"][0].get(
                                     "error_description"
                                 ),
+                                faithfulness_errors=final["sources"][0].get(
+                                    "faithfulness_errors", []
+                                ),
                             )
                         ],
                     ).model_dump_json() + "\n"
@@ -188,7 +225,9 @@ async def check(request: CheckRequest) -> StreamingResponse:
 
         async def stream_real(log: logging.Logger) -> AsyncGenerator[str, None]:
             try:
-                async for result in stream_verify_citations(request.text):
+                async for result in stream_verify_citations(
+                    request.text
+                ):
                     # Map VerificationResult to CheckResponse
                     claim = result.claim
                     sources = [
@@ -197,6 +236,7 @@ async def check(request: CheckRequest) -> StreamingResponse:
                             status=s.status,
                             reasoning=s.reasoning,
                             error_description=s.error_description,
+                            faithfulness_errors=s.faithfulness_errors,
                         )
                         for s in result.sources
                     ]

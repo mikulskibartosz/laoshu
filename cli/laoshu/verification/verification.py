@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+from laoshu.checks.error_classification import ErrorClassificationCheck
+from laoshu.baml_client.types import FaithfulnessError, FaithfulnessErrorType
 from laoshu.checks.faithfulness import FaithfulnessCheck, FaithfulnessCheckResult
 from typing import List, Optional, AsyncGenerator, Union
 from laoshu.config import load_config
@@ -22,11 +24,18 @@ class VerificationStatus(Enum):
 
 
 @dataclass
+class ErrorVerificationResult:
+    error_type: FaithfulnessErrorType
+    reasoning: str
+
+
+@dataclass
 class SourceVerificationResult:
     source: str
     status: VerificationStatus
     reasoning: str
     error_description: Optional[str]
+    faithfulness_errors: List[ErrorVerificationResult]
 
 
 @dataclass
@@ -65,6 +74,7 @@ def map_error_to_result(
                     status=VerificationStatus.BOT_TRAFFIC_DETECTED,
                     reasoning="",
                     error_description=f"Bot traffic detected. Cannot access the page.",
+                    faithfulness_errors=[],
                 )
             ],
         )
@@ -77,13 +87,17 @@ def map_error_to_result(
                     status=VerificationStatus.CANNOT_RETRIEVE,
                     reasoning="",
                     error_description=f"{result.status_code}: {result.error_description}",
+                    faithfulness_errors=[],
                 )
             ],
         )
 
 
 def map_check_result_to_result(
-    result: FaithfulnessCheckResult, source_url: str, citation: Citation
+    result: FaithfulnessCheckResult,
+    source_url: str,
+    citation: Citation,
+    errors: List[FaithfulnessError],
 ) -> VerificationResult:
     return VerificationResult(
         claim=citation.text,
@@ -97,6 +111,12 @@ def map_check_result_to_result(
                 ),
                 reasoning=result.reason,
                 error_description=None,
+                faithfulness_errors=[
+                    ErrorVerificationResult(
+                        error_type=error.error_type, reasoning=error.reasoning
+                    )
+                    for error in errors
+                ],
             )
         ],
     )
@@ -126,6 +146,7 @@ async def stream_verify_citations(
     scraper = ScrapingantScraper(api_key=config.scrapingant_api_key)
     check = FaithfulnessCheck.instance(api_key=config.openai_api_key)
     citations: List[Citation] = get_citations_with_sources(text)
+    error_classification_check = ErrorClassificationCheck()
 
     semaphore = asyncio.Semaphore(max_concurrent_scrapes)
     queue: "asyncio.Queue[Union[VerificationResult, Exception]]" = asyncio.Queue()
@@ -142,7 +163,14 @@ async def stream_verify_citations(
 
             markdown = page.markdown or ""
             result = await check.check(text=citation.text, context=[markdown])
-            await queue.put(map_check_result_to_result(result, source_url, citation))
+            errors: List[FaithfulnessError] = []
+            if result.is_hallucinated:
+                errors = await error_classification_check.classify_errors(
+                    citation.text, markdown
+                )
+            await queue.put(
+                map_check_result_to_result(result, source_url, citation, errors)
+            )
         except Exception as e:
             log.error(f"Error verifying  {source_url}: {e}")
             log.exception(e)
@@ -162,6 +190,7 @@ async def stream_verify_citations(
                         status=VerificationStatus.CHECK_PENDING,
                         reasoning="",
                         error_description=None,
+                        faithfulness_errors=[],
                     )
                 ],
             )

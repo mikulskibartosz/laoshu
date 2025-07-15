@@ -4,7 +4,7 @@ import config from "@/config";
 import React, { useState } from "react";
 import CheckResultBadge from "./CheckResultBadge";
 import ShortenTextToggle from "./ShortenTextToggle";
-import { Claim } from "@/libs/verify_ai";
+import { Claim, FaithfulnessError } from "@/libs/verify_ai";
 
 interface ResultTableProps {
   results: Claim[];
@@ -45,6 +45,12 @@ const ResultTable: React.FC<ResultTableProps> = ({
 
   const displayText = (text: string) => {
     return shortenText ? truncateText(text) : text;
+  };
+
+  const displayFaithfulnessErrors = (errors: FaithfulnessError[]) => {
+    return errors.map((error) => {
+      return <div key={error.errorType}>{error.errorType} {error.reasoning}</div>;
+    });
   };
 
   return (
@@ -142,6 +148,7 @@ const ResultTable: React.FC<ResultTableProps> = ({
                             {source.errorDescription}
                           </div>
                         )}
+                        {source.faithfulnessErrors && displayFaithfulnessErrors(source.faithfulnessErrors)}
                       </td>
                     </tr>
                   ))}
