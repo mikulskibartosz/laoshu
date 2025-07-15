@@ -71,7 +71,7 @@ MOCK_RESPONSE: List[Dict[str, Any]] = [
                 "faithfulness_errors": [
                     {
                         "error_type": FaithfulnessErrorType.SPECULATION_AS_FACT,
-                        "reasoning": "Lightning does strike the same place more than once, so the claim is factually incorrect."
+                        "reasoning": "Lightning does strike the same place more than once, so the claim is factually incorrect.",
                     }
                 ],
             },
@@ -82,7 +82,7 @@ MOCK_RESPONSE: List[Dict[str, Any]] = [
                 "faithfulness_errors": [
                     {
                         "error_type": FaithfulnessErrorType.OUT_OF_CONTEXT_INFORMATION,
-                        "reasoning": "Lightning can and does strike the same place multiple times, so the claim is factually incorrect."
+                        "reasoning": "Lightning can and does strike the same place multiple times, so the claim is factually incorrect.",
                     }
                 ],
             },
@@ -98,7 +98,7 @@ MOCK_RESPONSE: List[Dict[str, Any]] = [
                 "faithfulness_errors": [
                     {
                         "error_type": FaithfulnessErrorType.OUT_OF_CONTEXT_INFORMATION,
-                        "reasoning": "Bats are not blind; most have good eyesight, so the claim is factually incorrect."
+                        "reasoning": "Bats are not blind; most have good eyesight, so the claim is factually incorrect.",
                     }
                 ],
             },
@@ -124,12 +124,12 @@ MOCK_RESPONSE: List[Dict[str, Any]] = [
                 "faithfulness_errors": [
                     {
                         "error_type": FaithfulnessErrorType.OUTDATED_INFORMATION,
-                        "reasoning": "Goldfish have a memory span much longer than three seconds, so the claim is factually incorrect."
+                        "reasoning": "Goldfish have a memory span much longer than three seconds, so the claim is factually incorrect.",
                     },
                     {
                         "error_type": FaithfulnessErrorType.MISINTERPRETATION_OF_STATISTICS,
-                        "reasoning": "The claim misrepresents the memory span of goldfish, which is much longer than three seconds."
-                    }
+                        "reasoning": "The claim misrepresents the memory span of goldfish, which is much longer than three seconds.",
+                    },
                 ],
             },
         ],
@@ -225,9 +225,7 @@ async def check(request: CheckRequest) -> StreamingResponse:
 
         async def stream_real(log: logging.Logger) -> AsyncGenerator[str, None]:
             try:
-                async for result in stream_verify_citations(
-                    request.text
-                ):
+                async for result in stream_verify_citations(request.text):
                     # Map VerificationResult to CheckResponse
                     claim = result.claim
                     sources = [

@@ -4,6 +4,8 @@ import config from "@/config";
 import React, { useState } from "react";
 import CheckResultBadge from "./CheckResultBadge";
 import ShortenTextToggle from "./ShortenTextToggle";
+import HallucinationLink from "./HallucinationLink";
+import ExplanationModal from "./ExplanationModal";
 import { Claim, FaithfulnessError } from "@/libs/verify_ai";
 
 interface ResultTableProps {
@@ -18,6 +20,8 @@ const ResultTable: React.FC<ResultTableProps> = ({
   lastUpdatedClaim = null,
 }) => {
   const [shortenText, setShortenText] = useState(true);
+  const [modalErrors, setModalErrors] = useState<FaithfulnessError[] | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   if (!results || results.length === 0) {
     return null;
@@ -47,10 +51,14 @@ const ResultTable: React.FC<ResultTableProps> = ({
     return shortenText ? truncateText(text) : text;
   };
 
-  const displayFaithfulnessErrors = (errors: FaithfulnessError[]) => {
-    return errors.map((error) => {
-      return <div key={error.errorType}>{error.errorType} {error.reasoning}</div>;
-    });
+  const onShowModal = (errors: FaithfulnessError[]) => {
+    setModalErrors(errors);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setModalErrors(null);
   };
 
   return (
@@ -112,45 +120,52 @@ const ResultTable: React.FC<ResultTableProps> = ({
               return (
                 <React.Fragment key={index}>
                   {result.sources.map((source, sourceIndex) => (
-                    <tr
-                      key={`${index}-${sourceIndex}`}
-                      // Only add the data attribute to the first row of the claim
-                      {...(sourceIndex === 0 && isLastUpdated
-                        ? {
-                            "data-claim-row": encodeURIComponent(result.claim),
-                          }
-                        : {})}
-                    >
-                      {sourceIndex === 0 && (
-                        <td
-                          className="max-w-md"
-                          rowSpan={result.sources.length}
-                        >
-                          <div className="text-sm">{displayText(result.claim)}</div>
-                        </td>
-                      )}
-                      <td className="max-w-md">
-                        <a
-                          href={source.source}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block text-xs text-blue-600 hover:text-blue-800 underline truncate"
-                        >
-                          {source.source}
-                        </a>
-                      </td>
-                      <td>
-                        <CheckResultBadge status={source.status} />
-                      </td>
-                      <td>
-                        {source.errorDescription && (
-                          <div className="text-xs text-base-content/70">
-                            {source.errorDescription}
-                          </div>
+                    <React.Fragment key={`${index}-${sourceIndex}`}>
+                      <tr
+                        // Only add the data attribute to the first row of the claim
+                        {...(sourceIndex === 0 && isLastUpdated
+                          ? {
+                              "data-claim-row": encodeURIComponent(result.claim),
+                            }
+                          : {})}
+                      >
+                        {sourceIndex === 0 && (
+                          <td
+                            className="max-w-md"
+                            rowSpan={result.sources.length}
+                          >
+                            <div className="text-sm">{displayText(result.claim)}</div>
+                          </td>
                         )}
-                        {source.faithfulnessErrors && displayFaithfulnessErrors(source.faithfulnessErrors)}
-                      </td>
-                    </tr>
+                        <td className="max-w-md">
+                          <a
+                            href={source.source}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block text-xs text-blue-600 hover:text-blue-800 underline truncate"
+                          >
+                            {source.source}
+                          </a>
+                        </td>
+                        <td>
+                          <CheckResultBadge status={source.status} />
+                        </td>
+                        <td>
+                          {source.errorDescription && (
+                            <div className="text-xs text-base-content/70">
+                              {source.errorDescription}
+                            </div>
+                          )}
+                          {source.faithfulnessErrors && (
+                            <HallucinationLink
+                              errors={source.faithfulnessErrors}
+                              disabled={disableButtons}
+                              onShowModal={onShowModal}
+                            />
+                          )}
+                        </td>
+                      </tr>
+                    </React.Fragment>
                   ))}
                 </React.Fragment>
               );
@@ -177,6 +192,12 @@ const ResultTable: React.FC<ResultTableProps> = ({
           Report an issue
         </a>
       </div>
+
+      <ExplanationModal
+        errors={modalErrors || []}
+        isOpen={isModalOpen}
+        onClose={closeModal}
+      />
     </div>
   );
 };

@@ -18,6 +18,19 @@ export interface Claim {
 
 // Mapper function to map error_description to errorDescription in each source
 function mapSourceErrorDescription(src: any) {
+  // Helper to map error_type to errorType in faithfulness errors
+  function mapFaithfulnessErrors(errors: any[]) {
+    if (!Array.isArray(errors)) return errors;
+    return errors.map((err) => {
+      if (err && typeof err === "object" && "error_type" in err && !("errorType" in err)) {
+        // Map error_type to errorType, preserve other properties
+        const { error_type, ...rest } = err;
+        return { ...rest, errorType: error_type };
+      }
+      return err;
+    });
+  }
+
   if ('error_description' in src && !('errorDescription' in src)) {
     if (src.status === "CANNOT_RETRIEVE") {
       return {
@@ -28,7 +41,7 @@ function mapSourceErrorDescription(src: any) {
     return {
       ...src,
       errorDescription: src.error_description,
-      faithfulnessErrors: src.faithfulness_errors,
+      faithfulnessErrors: mapFaithfulnessErrors(src.faithfulness_errors),
     };
   }
   return src;
