@@ -91,10 +91,10 @@ const ResultTable: React.FC<ResultTableProps> = ({
         <table className="table table-zebra w-full">
           <thead>
             <tr>
-              <th className="text-left">Claim</th>
+              <th className="text-left">Claims</th>
               <th className="text-left">Sources</th>
-              <th className="text-left">Status</th>
-              <th className="text-left">Status explanation</th>
+              <th className="text-left">Results</th>
+              <th className="text-left">Result explanation</th>
             </tr>
           </thead>
           <tbody>
