@@ -49,6 +49,13 @@ def _split_paragraphs(article: str) -> List[str]:
     return [matched.strip()] + from_rest
 
 
+def clean_link(link: str) -> str:
+    idx = link.find("#:~:text=")
+    if idx != -1:
+        return link[:idx]
+    return link
+
+
 def get_citations_with_sources(article: str) -> List[Citation]:
     citations: List[Citation] = []
     total_words = 0
@@ -61,7 +68,7 @@ def get_citations_with_sources(article: str) -> List[Citation]:
         sources = []
         while paragraph_link := _strip_last_link(paragraph):
             citation_text = paragraph_link.paragraph
-            sources.append(paragraph_link.link)
+            sources.append(clean_link(paragraph_link.link))
             paragraph = paragraph_link.paragraph
         if citation_text:
             citations.append(Citation(text=citation_text, sources=sources[::-1]))
