@@ -1,8 +1,9 @@
 "use client";
 
 import config from "@/config";
-import React from "react";
+import React, { useState } from "react";
 import CheckResultBadge from "./CheckResultBadge";
+import ShortenTextToggle from "./ShortenTextToggle";
 import { Claim } from "@/libs/verify_ai";
 
 interface ResultTableProps {
@@ -16,6 +17,8 @@ const ResultTable: React.FC<ResultTableProps> = ({
   disableButtons = false,
   lastUpdatedClaim = null,
 }) => {
+  const [shortenText, setShortenText] = useState(true);
+
   if (!results || results.length === 0) {
     return null;
   }
@@ -24,18 +27,46 @@ const ResultTable: React.FC<ResultTableProps> = ({
     window.print();
   };
 
+  const truncateText = (text: string, maxLength: number = 200) => {
+    if (text.length <= maxLength) return text;
+
+    const truncatedText = text.substring(0, maxLength) + "...";
+    const charactersLeft = text.length - maxLength;
+    const truncatedWithCount = `${truncatedText} (${charactersLeft} characters left)`;
+
+    // If the full text with count message is shorter than the truncated version,
+    // display the full text anyway
+    if (text.length < truncatedWithCount.length) {
+      return text;
+    }
+
+    return truncatedWithCount;
+  };
+
+  const displayText = (text: string) => {
+    return shortenText ? truncateText(text) : text;
+  };
+
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="w-full flex justify-between items-center mb-4">
-        <button
-          className="btn btn-outline"
-          onClick={() => {
-            window.location.href = "/";
-          }}
-          disabled={disableButtons}
-        >
-          Run another check
-        </button>
+        <div className="flex items-center gap-4">
+          <button
+            className="btn btn-outline"
+            onClick={() => {
+              window.location.href = "/";
+            }}
+            disabled={disableButtons}
+          >
+            Run another check
+          </button>
+          <ShortenTextToggle
+            text="Shorten claim text"
+            checked={shortenText}
+            onChange={setShortenText}
+            disabled={disableButtons}
+          />
+        </div>
         <button
           className="btn btn-outline"
           onClick={handlePrintPDF}
@@ -89,7 +120,7 @@ const ResultTable: React.FC<ResultTableProps> = ({
                           className="max-w-md"
                           rowSpan={result.sources.length}
                         >
-                          <div className="text-sm">{result.claim}</div>
+                          <div className="text-sm">{displayText(result.claim)}</div>
                         </td>
                       )}
                       <td className="max-w-md">

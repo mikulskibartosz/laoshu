@@ -87,7 +87,7 @@ MOCK_RESPONSE: List[Dict[str, Any]] = [
         ],
     },
     {
-        "claim": "Goldfish have a three-second memory.",
+        "claim": "Goldfish have a three-second memory. " * 200,
         "sources": [
             {
                 "source": "https://www.scientificamerican.com/article/fact-or-fiction-goldfish-have-a-three-second-memory/",
