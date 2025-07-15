@@ -29,6 +29,11 @@ const CheckResultBadge: React.FC<CheckResultBadgeProps> = ({ status, className =
           label: "Error",
           classes: "badge-error"
         };
+      case "BOT_TRAFFIC_DETECTED":
+        return {
+          label: "Bot",
+          classes: "badge-warning"
+        };
       default:
         return {
           label: "Unknown",

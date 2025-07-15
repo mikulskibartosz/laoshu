@@ -1,8 +1,9 @@
 from dataclasses import dataclass
-from laoshu.checks.faithfulness import FaithfulnessCheck
+from laoshu.checks.faithfulness import FaithfulnessCheck, FaithfulnessCheckResult
 from typing import List, Optional, AsyncGenerator, Union
 from laoshu.config import load_config
 import os
+from laoshu.scraping.interface import ScrapingResult
 from laoshu.scraping.scrapingant import ScrapingantScraper
 from laoshu.citations.extraction import get_citations_with_sources, Citation
 import logging
@@ -17,6 +18,7 @@ class VerificationStatus(Enum):
     CORRECT = "CORRECT"
     CHECK_PENDING = "CHECK_PENDING"
     CANNOT_RETRIEVE = "CANNOT_RETRIEVE"
+    BOT_TRAFFIC_DETECTED = "BOT_TRAFFIC_DETECTED"
 
 
 @dataclass
@@ -46,6 +48,58 @@ async def verify_citations_in_file(file: str) -> List[VerificationResult]:
         if all(s.status != VerificationStatus.CHECK_PENDING for s in result.sources):
             results.append(result)
     return results
+
+
+def map_error_to_result(
+    result: ScrapingResult, citation: Citation
+) -> VerificationResult:
+    if result.is_success:
+        raise ValueError("Result is success, but error mapping was called.")
+
+    if result.status_code == 423:
+        return VerificationResult(
+            claim=citation.text,
+            sources=[
+                SourceVerificationResult(
+                    source=result.url,
+                    status=VerificationStatus.BOT_TRAFFIC_DETECTED,
+                    reasoning="",
+                    error_description=f"Bot traffic detected. Cannot access the page.",
+                )
+            ],
+        )
+    else:
+        return VerificationResult(
+            claim=citation.text,
+            sources=[
+                SourceVerificationResult(
+                    source=result.url,
+                    status=VerificationStatus.CANNOT_RETRIEVE,
+                    reasoning="",
+                    error_description=f"{result.status_code}: {result.error_description}",
+                )
+            ],
+        )
+
+
+def map_check_result_to_result(
+    result: FaithfulnessCheckResult, source_url: str, citation: Citation
+) -> VerificationResult:
+    return VerificationResult(
+        claim=citation.text,
+        sources=[
+            SourceVerificationResult(
+                source=source_url,
+                status=(
+                    VerificationStatus.CORRECT
+                    if not result.is_hallucinated
+                    else VerificationStatus.INCORRECT
+                ),
+                reasoning=result.reason,
+                error_description=None,
+            )
+        ],
+    )
 
 
 async def stream_verify_citations(
@@ -83,40 +137,12 @@ async def stream_verify_citations(
                 page = (await scraper.fetch_many_markdowns([source_url]))[0]
 
             if not page.is_success:
-                await queue.put(
-                    VerificationResult(
-                        claim=citation.text,
-                        sources=[
-                            SourceVerificationResult(
-                                source=source_url,
-                                status=VerificationStatus.CANNOT_RETRIEVE,
-                                reasoning="",
-                                error_description=f"{page.status_code}: {page.error_description}",
-                            )
-                        ],
-                    )
-                )
+                await queue.put(map_error_to_result(page, citation))
                 return
 
             markdown = page.markdown or ""
             result = await check.check(text=citation.text, context=[markdown])
-            await queue.put(
-                VerificationResult(
-                    claim=citation.text,
-                    sources=[
-                        SourceVerificationResult(
-                            source=source_url,
-                            status=(
-                                VerificationStatus.CORRECT
-                                if not result.is_hallucinated
-                                else VerificationStatus.INCORRECT
-                            ),
-                            reasoning=result.reason,
-                            error_description=None,
-                        )
-                    ],
-                )
-            )
+            await queue.put(map_check_result_to_result(result, source_url, citation))
         except Exception as e:
             log.error(f"Error verifying  {source_url}: {e}")
             log.exception(e)

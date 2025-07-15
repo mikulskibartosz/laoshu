@@ -19,8 +19,9 @@ MOCK_RESPONSE: List[Dict[str, Any]] = [
             },
             {
                 "source": "https://www.smithsonianmag.com/science-nature/why-great-wall-china-not-visible-space-180959570/",
-                "status": "INCORRECT",
+                "status": "BOT_TRAFFIC_DETECTED",
                 "reasoning": "The Smithsonian article confirms that the Great Wall of China is not visible from space with the naked eye. This is a common misconception that has been debunked by astronauts and space agencies.",
+                "error_description": "Bot traffic detected. Cannot access the page.",
             },
         ],
     },
@@ -193,15 +194,7 @@ async def check(request: CheckRequest) -> StreamingResponse:
                     sources = [
                         SourceVerificationResult(
                             source=s.source,
-                            status=(
-                                VerificationStatus.CHECK_PENDING
-                                if s.status == VerificationStatus.CHECK_PENDING
-                                else (
-                                    VerificationStatus.CORRECT
-                                    if s.status == VerificationStatus.CORRECT
-                                    else VerificationStatus.INCORRECT
-                                )
-                            ),
+                            status=s.status,
                             reasoning=s.reasoning,
                             error_description=s.error_description,
                         )

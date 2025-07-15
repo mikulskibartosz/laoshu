@@ -1,6 +1,6 @@
 export interface SourceVerificationResult {
   source: string;
-  status: "CHECK_PENDING" | "INCORRECT" | "CORRECT" | "CANNOT_RETRIEVE";
+  status: "CHECK_PENDING" | "INCORRECT" | "CORRECT" | "CANNOT_RETRIEVE" | "BOT_TRAFFIC_DETECTED";
   reasoning: string;
   errorDescription?: string;
 }
