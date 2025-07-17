@@ -16,6 +16,14 @@ export interface Claim {
   sources: SourceVerificationResult[];
 }
 
+function mapErrorTypeToHumanReadable(errorType: string) {
+  return errorType
+    .toLowerCase()
+    .split("_")
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 // Mapper function to map error_description to errorDescription in each source
 function mapSourceErrorDescription(src: any) {
   // Helper to map error_type to errorType in faithfulness errors
@@ -25,7 +33,7 @@ function mapSourceErrorDescription(src: any) {
       if (err && typeof err === "object" && "error_type" in err && !("errorType" in err)) {
         // Map error_type to errorType, preserve other properties
         const { error_type, ...rest } = err;
-        return { ...rest, errorType: error_type };
+        return { ...rest, errorType: mapErrorTypeToHumanReadable(error_type) };
       }
       return err;
     });
