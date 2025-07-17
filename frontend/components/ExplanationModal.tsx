@@ -1,18 +1,24 @@
 import React from "react";
-import { FaithfulnessError } from "@/libs/verify_ai";
+import { Claim, FaithfulnessError } from "@/libs/verify_ai";
+
+export class ModalContent {
+  claim: Claim;
+  errors: FaithfulnessError[];
+  source: string;
+}
 
 interface ExplanationModalProps {
-  errors: FaithfulnessError[];
+  content: ModalContent;
   isOpen: boolean;
   onClose: () => void;
 }
 
 const ExplanationModal: React.FC<ExplanationModalProps> = ({
-  errors,
+  content,
   isOpen,
   onClose,
 }) => {
-  if (!isOpen || !errors) return null;
+  if (!isOpen || !content) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -28,7 +34,7 @@ const ExplanationModal: React.FC<ExplanationModalProps> = ({
           </button>
         </div>
         <div className="space-y-3">
-          {errors.map((error: FaithfulnessError, index: number) => (
+          {content.errors.map((error: FaithfulnessError, index: number) => (
             <div key={index} className="border-l-4 border-red-500 pl-4 py-2">
               <div className="font-medium text-sm text-red-700 mb-1">
                 {error.errorType}

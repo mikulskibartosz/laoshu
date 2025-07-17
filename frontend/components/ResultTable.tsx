@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import CheckResultBadge from "./CheckResultBadge";
 import ShortenTextToggle from "./ShortenTextToggle";
 import HallucinationLink from "./HallucinationLink";
-import ExplanationModal from "./ExplanationModal";
+import ExplanationModal, { ModalContent } from "./ExplanationModal";
 import { Claim, FaithfulnessError } from "@/libs/verify_ai";
 
 interface ResultTableProps {
@@ -20,7 +20,7 @@ const ResultTable: React.FC<ResultTableProps> = ({
   lastUpdatedClaim = null,
 }) => {
   const [shortenText, setShortenText] = useState(true);
-  const [modalErrors, setModalErrors] = useState<FaithfulnessError[] | null>(null);
+  const [modalContent, setModalContent] = useState<ModalContent | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   if (!results || results.length === 0) {
@@ -51,14 +51,18 @@ const ResultTable: React.FC<ResultTableProps> = ({
     return shortenText ? truncateText(text) : text;
   };
 
-  const onShowModal = (errors: FaithfulnessError[]) => {
-    setModalErrors(errors);
+  const onShowModal = (errors: FaithfulnessError[], claim: Claim, source: string) => {
+    setModalContent({
+      claim,
+      errors,
+      source,
+    });
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    setModalErrors(null);
+    setModalContent(null);
   };
 
   return (
@@ -160,7 +164,7 @@ const ResultTable: React.FC<ResultTableProps> = ({
                             <HallucinationLink
                               errors={source.faithfulnessErrors}
                               disabled={disableButtons}
-                              onShowModal={onShowModal}
+                              onShowModal={(errors) => onShowModal(errors, result, source.source)}
                             />
                           )}
                         </td>
@@ -194,7 +198,7 @@ const ResultTable: React.FC<ResultTableProps> = ({
       </div>
 
       <ExplanationModal
-        errors={modalErrors || []}
+        content={modalContent}
         isOpen={isModalOpen}
         onClose={closeModal}
       />
