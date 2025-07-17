@@ -1,6 +1,6 @@
 [project]
 name = "laoshu"
-version = "0.1.1-dev"
+version = "0.2.0-dev"
 description = "Detects and flags hallucinated citations in GPT-4 / Perplexity outputs via a simple CLI."
 authors = [
     {name = "Bartosz Mikulski",email = "mail@mikulskibartosz.name"}
