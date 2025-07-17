@@ -20,6 +20,8 @@ One slip, and your credibility's gone.
 
 ![With Laoshu.ai](docs/laoshu_usage.gif)
 
+![With Laoshu.ai - hallucination details](docs/with_laoshu_details.png)
+
 ---
 
 ## Why Trust Laoshu.ai?

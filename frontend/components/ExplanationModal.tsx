@@ -55,10 +55,10 @@ const ExplanationModal: React.FC<ExplanationModalProps> = ({
             <div className="space-y-3">
               {content.errors.map((error: FaithfulnessError, index: number) => (
                 <div key={index} className="border-l-4 border-red-500 pl-4 py-2 bg-red-50">
-                  <div className="font-medium text-sm text-red-700 mb-1">
+                  <div className="font-medium text-sm text-red-700 mb-1 text-center">
                     {error.errorType}
                   </div>
-                  <div className="text-sm text-gray-700">
+                  <div className="text-sm text-gray-700 text-justify">
                     {error.reasoning}
                   </div>
                 </div>
