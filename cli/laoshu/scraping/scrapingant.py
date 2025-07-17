@@ -1,5 +1,6 @@
 from typing import List
 import httpx
+import json
 from asyncio import gather
 import logging
 from .interface import Scraper, ScraperError, ScrapingResult
@@ -49,6 +50,8 @@ class ScrapingantScraper(Scraper):
                 )
                 response.raise_for_status()
                 response_text = response.text
+                response_json = json.loads(response_text)
+                response_text = response_json["markdown"]
                 response_text_words_count = len(response_text.split())
                 log.info(
                     f"Fetched markdown from {url} with {response_text_words_count} words."

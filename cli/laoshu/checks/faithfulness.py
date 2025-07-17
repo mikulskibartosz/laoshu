@@ -55,9 +55,7 @@ class FaithfulnessCheck(ABC):
 
 
 class LlamaIndexFaithfulnessCheck(FaithfulnessCheck):
-    def __init__(
-        self, api_key: str, model: str = "gpt-4o-mini", temperature: float = 0.0
-    ):
+    def __init__(self, api_key: str, model: str = "gpt-4o", temperature: float = 0.0):
         self.llm = OpenAI(api_key=api_key, model=model, temperature=temperature)
 
     async def check(self, text: str, context: List[str]) -> FaithfulnessCheckResult:

@@ -20,33 +20,25 @@ from pydantic import BaseModel, ConfigDict
 
 import baml_py
 
-CheckT = typing_extensions.TypeVar("CheckT")
-CheckName = typing_extensions.TypeVar("CheckName", bound=str)
-
+CheckT = typing_extensions.TypeVar('CheckT')
+CheckName = typing_extensions.TypeVar('CheckName', bound=str)
 
 class Check(BaseModel):
     name: str
     expression: str
     status: str
-
-
 class Checked(BaseModel, typing.Generic[CheckT, CheckName]):
     value: CheckT
     checks: typing.Dict[CheckName, Check]
 
-
 def get_checks(checks: typing.Dict[CheckName, Check]) -> typing.List[Check]:
     return list(checks.values())
 
-
 def all_succeeded(checks: typing.Dict[CheckName, Check]) -> bool:
     return all(check.status == "succeeded" for check in get_checks(checks))
-
-
 # #########################################################################
 # Generated enums (1)
 # #########################################################################
-
 
 class FaithfulnessErrorType(str, Enum):
     CONTRADICTORY_FACTS = "CONTRADICTORY_FACTS"
@@ -66,16 +58,13 @@ class FaithfulnessErrorType(str, Enum):
     CHERRY_PICKING = "CHERRY_PICKING"
     MISINTERPRETATION_OF_STATISTICS = "MISINTERPRETATION_OF_STATISTICS"
 
-
 # #########################################################################
 # Generated classes (1)
 # #########################################################################
 
-
 class FaithfulnessError(BaseModel):
     reasoning: str
     error_type: FaithfulnessErrorType
-
 
 # #########################################################################
 # Generated type aliases (0)

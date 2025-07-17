@@ -18,23 +18,17 @@ import baml_py
 
 from . import types
 
-StreamStateValueT = typing.TypeVar("StreamStateValueT")
-
-
+StreamStateValueT = typing.TypeVar('StreamStateValueT')
 class StreamState(BaseModel, typing.Generic[StreamStateValueT]):
     value: StreamStateValueT
     state: typing_extensions.Literal["Pending", "Incomplete", "Complete"]
-
-
 # #########################################################################
 # Generated classes (1)
 # #########################################################################
 
-
 class FaithfulnessError(BaseModel):
     reasoning: typing.Optional[str] = None
     error_type: typing.Optional[types.FaithfulnessErrorType] = None
-
 
 # #########################################################################
 # Generated type aliases (0)
