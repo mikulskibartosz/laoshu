@@ -19,6 +19,8 @@ export interface SourceVerificationResult {
   reasoning: string;
   errorDescription?: string;
   faithfulnessErrors: FaithfulnessError[];
+  publicationDateIso8601?: string;
+  publicationDateRelativeToNow?: string;
 }
 
 export interface Claim {
@@ -60,6 +62,8 @@ function mapSourceErrorDescription(src: any) {
       ...src,
       errorDescription: src.error_description,
       faithfulnessErrors: mapFaithfulnessErrors(src.faithfulness_errors),
+      publicationDateIso8601: src.publication_date_iso8601,
+      publicationDateRelativeToNow: src.publication_date_relative_to_now,
     };
   }
   return src;

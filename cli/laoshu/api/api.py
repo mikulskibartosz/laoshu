@@ -150,6 +150,8 @@ class SourceVerificationResult(BaseModel):
     reasoning: str
     error_description: Optional[str] = None
     faithfulness_errors: List[ErrorVerificationResult] = []
+    publication_date_iso8601: Optional[str] = None
+    publication_date_relative_to_now: Optional[str] = None
 
 
 class CheckResponse(BaseModel):
@@ -215,6 +217,8 @@ async def check(request: CheckRequest) -> StreamingResponse:
                                 faithfulness_errors=final["sources"][0].get(
                                     "faithfulness_errors", []
                                 ),
+                                publication_date_iso8601="2024-01-01",
+                                publication_date_relative_to_now="1 year ago",
                             )
                         ],
                     ).model_dump_json() + "\n"
@@ -235,6 +239,8 @@ async def check(request: CheckRequest) -> StreamingResponse:
                             reasoning=s.reasoning,
                             error_description=s.error_description,
                             faithfulness_errors=s.faithfulness_errors,
+                            publication_date_iso8601=s.publication_date_iso8601,
+                            publication_date_relative_to_now=s.publication_date_relative_to_now,
                         )
                         for s in result.sources
                     ]

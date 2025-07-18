@@ -98,6 +98,22 @@ class BamlAsyncClient:
             result.cast_to(types, types, stream_types, False, __runtime__),
         )
 
+    async def GetPublicationTime(
+        self,
+        markdown: str,
+        baml_options: BamlCallOptions = {},
+    ) -> types.PublicationTime:
+        result = await self.__options.merge_options(baml_options).call_function_async(
+            function_name="GetPublicationTime",
+            args={
+                "markdown": markdown,
+            },
+        )
+        return typing.cast(
+            types.PublicationTime,
+            result.cast_to(types, types, stream_types, False, __runtime__),
+        )
+
 
 class BamlStreamClient:
     __options: DoNotUseDirectlyCallManager
@@ -137,6 +153,30 @@ class BamlStreamClient:
             ctx,
         )
 
+    def GetPublicationTime(
+        self,
+        markdown: str,
+        baml_options: BamlCallOptions = {},
+    ) -> baml_py.BamlStream[stream_types.PublicationTime, types.PublicationTime]:
+        ctx, result = self.__options.merge_options(baml_options).create_async_stream(
+            function_name="GetPublicationTime",
+            args={
+                "markdown": markdown,
+            },
+        )
+        return baml_py.BamlStream[stream_types.PublicationTime, types.PublicationTime](
+            result,
+            lambda x: typing.cast(
+                stream_types.PublicationTime,
+                x.cast_to(types, types, stream_types, True, __runtime__),
+            ),
+            lambda x: typing.cast(
+                types.PublicationTime,
+                x.cast_to(types, types, stream_types, False, __runtime__),
+            ),
+            ctx,
+        )
+
 
 class BamlHttpRequestClient:
     __options: DoNotUseDirectlyCallManager
@@ -162,6 +202,22 @@ class BamlHttpRequestClient:
         )
         return result
 
+    async def GetPublicationTime(
+        self,
+        markdown: str,
+        baml_options: BamlCallOptions = {},
+    ) -> baml_py.baml_py.HTTPRequest:
+        result = await self.__options.merge_options(
+            baml_options
+        ).create_http_request_async(
+            function_name="GetPublicationTime",
+            args={
+                "markdown": markdown,
+            },
+            mode="request",
+        )
+        return result
+
 
 class BamlHttpStreamRequestClient:
     __options: DoNotUseDirectlyCallManager
@@ -182,6 +238,22 @@ class BamlHttpStreamRequestClient:
             args={
                 "claim": claim,
                 "source_content": source_content,
+            },
+            mode="stream",
+        )
+        return result
+
+    async def GetPublicationTime(
+        self,
+        markdown: str,
+        baml_options: BamlCallOptions = {},
+    ) -> baml_py.baml_py.HTTPRequest:
+        result = await self.__options.merge_options(
+            baml_options
+        ).create_http_request_async(
+            function_name="GetPublicationTime",
+            args={
+                "markdown": markdown,
             },
             mode="stream",
         )

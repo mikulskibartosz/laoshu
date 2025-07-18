@@ -35,6 +35,18 @@ class LlmResponseParser:
         )
         return typing.cast(typing.List["types.FaithfulnessError"], result)
 
+    def GetPublicationTime(
+        self,
+        llm_response: str,
+        baml_options: BamlCallOptions = {},
+    ) -> types.PublicationTime:
+        result = self.__options.merge_options(baml_options).parse_response(
+            function_name="GetPublicationTime",
+            llm_response=llm_response,
+            mode="request",
+        )
+        return typing.cast(types.PublicationTime, result)
+
 
 class LlmStreamParser:
     __options: DoNotUseDirectlyCallManager
@@ -53,3 +65,13 @@ class LlmStreamParser:
             mode="stream",
         )
         return typing.cast(typing.List["stream_types.FaithfulnessError"], result)
+
+    def GetPublicationTime(
+        self,
+        llm_response: str,
+        baml_options: BamlCallOptions = {},
+    ) -> stream_types.PublicationTime:
+        result = self.__options.merge_options(baml_options).parse_response(
+            function_name="GetPublicationTime", llm_response=llm_response, mode="stream"
+        )
+        return typing.cast(stream_types.PublicationTime, result)

@@ -22,6 +22,7 @@ class TypeBuilder(type_builder.TypeBuilder):
             classes=set(
                 [
                     "FaithfulnessError",
+                    "PublicationTime",
                 ]
             ),
             enums=set(
@@ -41,12 +42,16 @@ class TypeBuilder(type_builder.TypeBuilder):
         return FaithfulnessErrorTypeViewer(self)
 
     # #########################################################################
-    # Generated classes 1
+    # Generated classes 2
     # #########################################################################
 
     @property
     def FaithfulnessError(self) -> "FaithfulnessErrorViewer":
         return FaithfulnessErrorViewer(self)
+
+    @property
+    def PublicationTime(self) -> "PublicationTimeViewer":
+        return PublicationTimeViewer(self)
 
 
 # #########################################################################
@@ -148,7 +153,7 @@ class FaithfulnessErrorTypeValues:
 
 
 # #########################################################################
-# Generated classes 1
+# Generated classes 2
 # #########################################################################
 
 
@@ -197,3 +202,65 @@ class FaithfulnessErrorProperties:
     @property
     def error_type(self) -> type_builder.ClassPropertyViewer:
         return type_builder.ClassPropertyViewer(self.__bldr.property("error_type"))
+
+
+class PublicationTimeAst:
+    def __init__(self, tb: type_builder.TypeBuilder):
+        _tb = tb._tb  # type: ignore (we know how to use this private attribute)
+        self._bldr = _tb.class_("PublicationTime")
+        self._properties: typing.Set[str] = set(
+            [
+                "Reasoning",
+                "is_in_the_text",
+                "year",
+                "month",
+                "day",
+            ]
+        )
+        self._props = PublicationTimeProperties(self._bldr, self._properties)
+
+    def type(self) -> baml_py.FieldType:
+        return self._bldr.field()
+
+    @property
+    def props(self) -> "PublicationTimeProperties":
+        return self._props
+
+
+class PublicationTimeViewer(PublicationTimeAst):
+    def __init__(self, tb: type_builder.TypeBuilder):
+        super().__init__(tb)
+
+    def list_properties(
+        self,
+    ) -> typing.List[typing.Tuple[str, type_builder.ClassPropertyViewer]]:
+        return [
+            (name, type_builder.ClassPropertyViewer(self._bldr.property(name)))
+            for name in self._properties
+        ]
+
+
+class PublicationTimeProperties:
+    def __init__(self, bldr: baml_py.ClassBuilder, properties: typing.Set[str]):
+        self.__bldr = bldr
+        self.__properties = properties  # type: ignore (we know how to use this private attribute) # noqa: F821
+
+    @property
+    def Reasoning(self) -> type_builder.ClassPropertyViewer:
+        return type_builder.ClassPropertyViewer(self.__bldr.property("Reasoning"))
+
+    @property
+    def is_in_the_text(self) -> type_builder.ClassPropertyViewer:
+        return type_builder.ClassPropertyViewer(self.__bldr.property("is_in_the_text"))
+
+    @property
+    def year(self) -> type_builder.ClassPropertyViewer:
+        return type_builder.ClassPropertyViewer(self.__bldr.property("year"))
+
+    @property
+    def month(self) -> type_builder.ClassPropertyViewer:
+        return type_builder.ClassPropertyViewer(self.__bldr.property("month"))
+
+    @property
+    def day(self) -> type_builder.ClassPropertyViewer:
+        return type_builder.ClassPropertyViewer(self.__bldr.property("day"))

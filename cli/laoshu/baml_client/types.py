@@ -62,13 +62,21 @@ class FaithfulnessErrorType(str, Enum):
 
 
 # #########################################################################
-# Generated classes (1)
+# Generated classes (2)
 # #########################################################################
 
 
 class FaithfulnessError(BaseModel):
     reasoning: str
     error_type: FaithfulnessErrorType
+
+
+class PublicationTime(BaseModel):
+    Reasoning: str
+    is_in_the_text: bool
+    year: int
+    month: int
+    day: int
 
 
 # #########################################################################

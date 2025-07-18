@@ -1,5 +1,5 @@
 from typing import List
-from laoshu.baml_client.types import FaithfulnessError, FaithfulnessErrorType
+from laoshu.baml_client.types import FaithfulnessError
 from laoshu.baml_client import b
 
 

@@ -17,5 +17,7 @@ from . import stream_types
 type_map = {
     "types.FaithfulnessError": types.FaithfulnessError,
     "stream_types.FaithfulnessError": stream_types.FaithfulnessError,
+    "types.PublicationTime": types.PublicationTime,
+    "stream_types.PublicationTime": stream_types.PublicationTime,
     "types.FaithfulnessErrorType": types.FaithfulnessErrorType,
 }

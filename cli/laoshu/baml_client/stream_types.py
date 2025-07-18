@@ -27,13 +27,21 @@ class StreamState(BaseModel, typing.Generic[StreamStateValueT]):
 
 
 # #########################################################################
-# Generated classes (1)
+# Generated classes (2)
 # #########################################################################
 
 
 class FaithfulnessError(BaseModel):
     reasoning: typing.Optional[str] = None
     error_type: typing.Optional[types.FaithfulnessErrorType] = None
+
+
+class PublicationTime(BaseModel):
+    Reasoning: typing.Optional[str] = None
+    is_in_the_text: typing.Optional[bool] = None
+    year: typing.Optional[int] = None
+    month: typing.Optional[int] = None
+    day: typing.Optional[int] = None
 
 
 # #########################################################################

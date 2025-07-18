@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from laoshu.checks.freshness import FreshnessCheck, FreshnessCheckResult
 from laoshu.checks.error_classification import ErrorClassificationCheck
 from laoshu.baml_client.types import FaithfulnessError, FaithfulnessErrorType
 from laoshu.checks.faithfulness import FaithfulnessCheck, FaithfulnessCheckResult
@@ -36,6 +37,8 @@ class SourceVerificationResult:
     reasoning: str
     error_description: Optional[str]
     faithfulness_errors: List[ErrorVerificationResult]
+    publication_date_iso8601: Optional[str]
+    publication_date_relative_to_now: Optional[str]
 
 
 @dataclass
@@ -75,6 +78,8 @@ def map_error_to_result(
                     reasoning="",
                     error_description=f"Bot traffic detected. Cannot access the page.",
                     faithfulness_errors=[],
+                    publication_date_iso8601=None,
+                    publication_date_relative_to_now=None,
                 )
             ],
         )
@@ -88,6 +93,8 @@ def map_error_to_result(
                     reasoning="",
                     error_description=f"{result.status_code}: {result.error_description}",
                     faithfulness_errors=[],
+                    publication_date_iso8601=None,
+                    publication_date_relative_to_now=None,
                 )
             ],
         )
@@ -98,6 +105,7 @@ def map_check_result_to_result(
     source_url: str,
     citation: Citation,
     errors: List[FaithfulnessError],
+    freshness_result: FreshnessCheckResult,
 ) -> VerificationResult:
     return VerificationResult(
         claim=citation.text,
@@ -117,6 +125,8 @@ def map_check_result_to_result(
                     )
                     for error in errors
                 ],
+                publication_date_iso8601=freshness_result.publication_date_iso8601,
+                publication_date_relative_to_now=freshness_result.relative_to_now,
             )
         ],
     )
@@ -147,6 +157,7 @@ async def stream_verify_citations(
     check = FaithfulnessCheck.instance(api_key=config.openai_api_key)
     citations: List[Citation] = get_citations_with_sources(text)
     error_classification_check = ErrorClassificationCheck()
+    freshness_check = FreshnessCheck()
 
     semaphore = asyncio.Semaphore(max_concurrent_scrapes)
     queue: "asyncio.Queue[Union[VerificationResult, Exception]]" = asyncio.Queue()
@@ -168,8 +179,11 @@ async def stream_verify_citations(
                 errors = await error_classification_check.classify_errors(
                     citation.text, markdown
                 )
+            freshness_result = await freshness_check.check_freshness(markdown)
             await queue.put(
-                map_check_result_to_result(result, source_url, citation, errors)
+                map_check_result_to_result(
+                    result, source_url, citation, errors, freshness_result
+                )
             )
         except Exception as e:
             log.error(f"Error verifying  {source_url}: {e}")
@@ -191,6 +205,8 @@ async def stream_verify_citations(
                         reasoning="",
                         error_description=None,
                         faithfulness_errors=[],
+                        publication_date_iso8601=None,
+                        publication_date_relative_to_now=None,
                     )
                 ],
             )

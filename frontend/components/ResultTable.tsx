@@ -150,6 +150,14 @@ const ResultTable: React.FC<ResultTableProps> = ({
                           >
                             {source.source}
                           </a>
+                          {(source.publicationDateIso8601 && source.publicationDateRelativeToNow) && (
+                            <div className="text-xs text-base-content/70">
+                              Publication date: {source.publicationDateIso8601}
+                              {source.publicationDateRelativeToNow && (
+                                <> ({source.publicationDateRelativeToNow})</>
+                              )}
+                            </div>
+                          )}
                         </td>
                         <td>
                           <CheckResultBadge status={source.status} />
