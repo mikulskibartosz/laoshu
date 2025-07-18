@@ -1,21 +1,34 @@
 enum FaithfulnessErrorType {
-  CONTRADICTORY_FACTS @description("The claim states something that directly contradicts information in the source")
-  EXAGGERATED_NUMBERS @description("Claim inflates or deflates numerical data from the source")
-  WRONG_DATES_TIMELINE @description("Claim misrepresents when events occurred according to the source")
-  INCORRECT_NAMES_IDENTIFIERS @description("Claim uses wrong names, titles, or identifiers for people, places, or things")
-  MISATTRIBUTED_QUOTES @description("Claim attributes a statement to the wrong person or source")
-  OUT_OF_CONTEXT_INFORMATION @description("Claim takes information from source but removes crucial context that changes meaning")
-  WRONG_SOURCE_ATTRIBUTION @description("Claim cites a source that doesn't actually contain the stated information")
-  FABRICATED_CITATIONS @description("Claim references a source that doesn't exist or doesn't contain the claimed content")
-  PARTIAL_TRUTH_DISTORTION @description("Claim presents only part of the story from the source, omitting important qualifiers")
-  SPECULATION_AS_FACT @description("Claim treats source's speculation or hypotheses as established facts")
-  OUTDATED_INFORMATION @description("Claim uses information from source that has been superseded or corrected")
-  MISSING_QUALIFICATIONS @description("Claim omits important caveats, limitations, or conditions mentioned in source")
-  FALSE_CAUSATION @description("Claim suggests cause-and-effect relationship not supported by source")
-  OVERGENERALIZATION @description("Claim extends source's specific findings to broader conclusions not justified")
-  CHERRY_PICKING @description("Claim selectively uses only supporting evidence while ignoring contradictory information in source")
-  MISINTERPRETATION_OF_STATISTICS @description("Claim misrepresents statistical findings or their significance from source")
+  CONTRADICTORY_FACTS @description("The claim states the opposite of what the cited source actually says.")
+  NUMERIC_STATISTICAL_DISTORTION @description(
+    "The claim inflates or deflates numbers, or otherwise misrepresents statistical findings or their significance compared with the source."
+  )
+  WRONG_DATES_TIMELINE @description(
+    "The claim puts events on the wrong date or in the wrong chronological order relative to the source."
+  )
+  INCORRECT_ATTRIBUTION_IDENTIFIER @description(
+    "The claim assigns a quote, idea, name, title, or other identifier to the wrong person, place, or entity."
+  )
+  CONTEXTUAL_OMISSION @description(
+    "The claim uses information from the source but omits crucial context, qualifiers, or contradictory evidence—‑including cherry‑picking—which changes the original meaning."
+  )
+  BAD_OR_NONEXISTENT_SOURCE @description(
+    "The claim cites a source that either does not contain the stated information or does not exist at all."
+  )
+  SPECULATION_AS_FACT @description(
+    "The claim presents speculation, hypotheses, or unverified statements from the source as established fact."
+  )
+  OUTDATED_INFORMATION @description(
+    "The claim relies on information that has been superseded, retracted, or corrected since the source was published."
+  )
+  FALSE_CAUSATION @description(
+    "The claim asserts a cause‑and‑effect relationship that the source does not support."
+  )
+  OVERGENERALIZATION @description(
+    "The claim broadens specific findings from the source to sweeping conclusions that are not justified."
+  )
 }
+
 
 class FaithfulnessError {
   reasoning string

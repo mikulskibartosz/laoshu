@@ -15,13 +15,22 @@ from baml_py import type_builder
 from baml_py import baml_py
 from .globals import DO_NOT_USE_DIRECTLY_UNLESS_YOU_KNOW_WHAT_YOURE_DOING_RUNTIME
 
+
 class TypeBuilder(type_builder.TypeBuilder):
     def __init__(self):
-        super().__init__(classes=set(
-          ["FaithfulnessError",]
-        ), enums=set(
-          ["FaithfulnessErrorType",]
-        ), runtime=DO_NOT_USE_DIRECTLY_UNLESS_YOU_KNOW_WHAT_YOURE_DOING_RUNTIME)
+        super().__init__(
+            classes=set(
+                [
+                    "FaithfulnessError",
+                ]
+            ),
+            enums=set(
+                [
+                    "FaithfulnessErrorType",
+                ]
+            ),
+            runtime=DO_NOT_USE_DIRECTLY_UNLESS_YOU_KNOW_WHAT_YOURE_DOING_RUNTIME,
+        )
 
     # #########################################################################
     # Generated enums 1
@@ -30,7 +39,6 @@ class TypeBuilder(type_builder.TypeBuilder):
     @property
     def FaithfulnessErrorType(self) -> "FaithfulnessErrorTypeViewer":
         return FaithfulnessErrorTypeViewer(self)
-
 
     # #########################################################################
     # Generated classes 1
@@ -41,16 +49,29 @@ class TypeBuilder(type_builder.TypeBuilder):
         return FaithfulnessErrorViewer(self)
 
 
-
 # #########################################################################
 # Generated enums 1
 # #########################################################################
 
+
 class FaithfulnessErrorTypeAst:
     def __init__(self, tb: type_builder.TypeBuilder):
-        _tb = tb._tb # type: ignore (we know how to use this private attribute)
+        _tb = tb._tb  # type: ignore (we know how to use this private attribute)
         self._bldr = _tb.enum("FaithfulnessErrorType")
-        self._values: typing.Set[str] = set([  "CONTRADICTORY_FACTS",  "EXAGGERATED_NUMBERS",  "WRONG_DATES_TIMELINE",  "INCORRECT_NAMES_IDENTIFIERS",  "MISATTRIBUTED_QUOTES",  "OUT_OF_CONTEXT_INFORMATION",  "WRONG_SOURCE_ATTRIBUTION",  "FABRICATED_CITATIONS",  "PARTIAL_TRUTH_DISTORTION",  "SPECULATION_AS_FACT",  "OUTDATED_INFORMATION",  "MISSING_QUALIFICATIONS",  "FALSE_CAUSATION",  "OVERGENERALIZATION",  "CHERRY_PICKING",  "MISINTERPRETATION_OF_STATISTICS",  ])
+        self._values: typing.Set[str] = set(
+            [
+                "CONTRADICTORY_FACTS",
+                "NUMERIC_STATISTICAL_DISTORTION",
+                "WRONG_DATES_TIMELINE",
+                "INCORRECT_ATTRIBUTION_IDENTIFIER",
+                "CONTEXTUAL_OMISSION",
+                "BAD_OR_NONEXISTENT_SOURCE",
+                "SPECULATION_AS_FACT",
+                "OUTDATED_INFORMATION",
+                "FALSE_CAUSATION",
+                "OVERGENERALIZATION",
+            ]
+        )
         self._vals = FaithfulnessErrorTypeValues(self._bldr, self._values)
 
     def type(self) -> baml_py.FieldType:
@@ -65,95 +86,82 @@ class FaithfulnessErrorTypeViewer(FaithfulnessErrorTypeAst):
     def __init__(self, tb: type_builder.TypeBuilder):
         super().__init__(tb)
 
-    
-    def list_values(self) -> typing.List[typing.Tuple[str, type_builder.EnumValueViewer]]:
-        return [(name, type_builder.EnumValueViewer(self._bldr.value(name))) for name in self._values]
-    
+    def list_values(
+        self,
+    ) -> typing.List[typing.Tuple[str, type_builder.EnumValueViewer]]:
+        return [
+            (name, type_builder.EnumValueViewer(self._bldr.value(name)))
+            for name in self._values
+        ]
+
 
 class FaithfulnessErrorTypeValues:
     def __init__(self, enum_bldr: baml_py.EnumBuilder, values: typing.Set[str]):
         self.__bldr = enum_bldr
-        self.__values = values # type: ignore (we know how to use this private attribute) # noqa: F821
+        self.__values = values  # type: ignore (we know how to use this private attribute) # noqa: F821
 
-    
-    
     @property
     def CONTRADICTORY_FACTS(self) -> type_builder.EnumValueViewer:
         return type_builder.EnumValueViewer(self.__bldr.value("CONTRADICTORY_FACTS"))
-    
+
     @property
-    def EXAGGERATED_NUMBERS(self) -> type_builder.EnumValueViewer:
-        return type_builder.EnumValueViewer(self.__bldr.value("EXAGGERATED_NUMBERS"))
-    
+    def NUMERIC_STATISTICAL_DISTORTION(self) -> type_builder.EnumValueViewer:
+        return type_builder.EnumValueViewer(
+            self.__bldr.value("NUMERIC_STATISTICAL_DISTORTION")
+        )
+
     @property
     def WRONG_DATES_TIMELINE(self) -> type_builder.EnumValueViewer:
         return type_builder.EnumValueViewer(self.__bldr.value("WRONG_DATES_TIMELINE"))
-    
+
     @property
-    def INCORRECT_NAMES_IDENTIFIERS(self) -> type_builder.EnumValueViewer:
-        return type_builder.EnumValueViewer(self.__bldr.value("INCORRECT_NAMES_IDENTIFIERS"))
-    
+    def INCORRECT_ATTRIBUTION_IDENTIFIER(self) -> type_builder.EnumValueViewer:
+        return type_builder.EnumValueViewer(
+            self.__bldr.value("INCORRECT_ATTRIBUTION_IDENTIFIER")
+        )
+
     @property
-    def MISATTRIBUTED_QUOTES(self) -> type_builder.EnumValueViewer:
-        return type_builder.EnumValueViewer(self.__bldr.value("MISATTRIBUTED_QUOTES"))
-    
+    def CONTEXTUAL_OMISSION(self) -> type_builder.EnumValueViewer:
+        return type_builder.EnumValueViewer(self.__bldr.value("CONTEXTUAL_OMISSION"))
+
     @property
-    def OUT_OF_CONTEXT_INFORMATION(self) -> type_builder.EnumValueViewer:
-        return type_builder.EnumValueViewer(self.__bldr.value("OUT_OF_CONTEXT_INFORMATION"))
-    
-    @property
-    def WRONG_SOURCE_ATTRIBUTION(self) -> type_builder.EnumValueViewer:
-        return type_builder.EnumValueViewer(self.__bldr.value("WRONG_SOURCE_ATTRIBUTION"))
-    
-    @property
-    def FABRICATED_CITATIONS(self) -> type_builder.EnumValueViewer:
-        return type_builder.EnumValueViewer(self.__bldr.value("FABRICATED_CITATIONS"))
-    
-    @property
-    def PARTIAL_TRUTH_DISTORTION(self) -> type_builder.EnumValueViewer:
-        return type_builder.EnumValueViewer(self.__bldr.value("PARTIAL_TRUTH_DISTORTION"))
-    
+    def BAD_OR_NONEXISTENT_SOURCE(self) -> type_builder.EnumValueViewer:
+        return type_builder.EnumValueViewer(
+            self.__bldr.value("BAD_OR_NONEXISTENT_SOURCE")
+        )
+
     @property
     def SPECULATION_AS_FACT(self) -> type_builder.EnumValueViewer:
         return type_builder.EnumValueViewer(self.__bldr.value("SPECULATION_AS_FACT"))
-    
+
     @property
     def OUTDATED_INFORMATION(self) -> type_builder.EnumValueViewer:
         return type_builder.EnumValueViewer(self.__bldr.value("OUTDATED_INFORMATION"))
-    
-    @property
-    def MISSING_QUALIFICATIONS(self) -> type_builder.EnumValueViewer:
-        return type_builder.EnumValueViewer(self.__bldr.value("MISSING_QUALIFICATIONS"))
-    
+
     @property
     def FALSE_CAUSATION(self) -> type_builder.EnumValueViewer:
         return type_builder.EnumValueViewer(self.__bldr.value("FALSE_CAUSATION"))
-    
+
     @property
     def OVERGENERALIZATION(self) -> type_builder.EnumValueViewer:
         return type_builder.EnumValueViewer(self.__bldr.value("OVERGENERALIZATION"))
-    
-    @property
-    def CHERRY_PICKING(self) -> type_builder.EnumValueViewer:
-        return type_builder.EnumValueViewer(self.__bldr.value("CHERRY_PICKING"))
-    
-    @property
-    def MISINTERPRETATION_OF_STATISTICS(self) -> type_builder.EnumValueViewer:
-        return type_builder.EnumValueViewer(self.__bldr.value("MISINTERPRETATION_OF_STATISTICS"))
-    
-    
-
 
 
 # #########################################################################
 # Generated classes 1
 # #########################################################################
 
+
 class FaithfulnessErrorAst:
     def __init__(self, tb: type_builder.TypeBuilder):
-        _tb = tb._tb # type: ignore (we know how to use this private attribute)
+        _tb = tb._tb  # type: ignore (we know how to use this private attribute)
         self._bldr = _tb.class_("FaithfulnessError")
-        self._properties: typing.Set[str] = set([  "reasoning",  "error_type",  ])
+        self._properties: typing.Set[str] = set(
+            [
+                "reasoning",
+                "error_type",
+            ]
+        )
         self._props = FaithfulnessErrorProperties(self._bldr, self._properties)
 
     def type(self) -> baml_py.FieldType:
@@ -168,26 +176,24 @@ class FaithfulnessErrorViewer(FaithfulnessErrorAst):
     def __init__(self, tb: type_builder.TypeBuilder):
         super().__init__(tb)
 
-    
-    def list_properties(self) -> typing.List[typing.Tuple[str, type_builder.ClassPropertyViewer]]:
-        return [(name, type_builder.ClassPropertyViewer(self._bldr.property(name))) for name in self._properties]
-    
+    def list_properties(
+        self,
+    ) -> typing.List[typing.Tuple[str, type_builder.ClassPropertyViewer]]:
+        return [
+            (name, type_builder.ClassPropertyViewer(self._bldr.property(name)))
+            for name in self._properties
+        ]
 
 
 class FaithfulnessErrorProperties:
     def __init__(self, bldr: baml_py.ClassBuilder, properties: typing.Set[str]):
         self.__bldr = bldr
-        self.__properties = properties # type: ignore (we know how to use this private attribute) # noqa: F821
+        self.__properties = properties  # type: ignore (we know how to use this private attribute) # noqa: F821
 
-    
-    
     @property
     def reasoning(self) -> type_builder.ClassPropertyViewer:
         return type_builder.ClassPropertyViewer(self.__bldr.property("reasoning"))
-    
+
     @property
     def error_type(self) -> type_builder.ClassPropertyViewer:
         return type_builder.ClassPropertyViewer(self.__bldr.property("error_type"))
-    
-    
-

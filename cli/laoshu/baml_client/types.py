@@ -20,51 +20,56 @@ from pydantic import BaseModel, ConfigDict
 
 import baml_py
 
-CheckT = typing_extensions.TypeVar('CheckT')
-CheckName = typing_extensions.TypeVar('CheckName', bound=str)
+CheckT = typing_extensions.TypeVar("CheckT")
+CheckName = typing_extensions.TypeVar("CheckName", bound=str)
+
 
 class Check(BaseModel):
     name: str
     expression: str
     status: str
+
+
 class Checked(BaseModel, typing.Generic[CheckT, CheckName]):
     value: CheckT
     checks: typing.Dict[CheckName, Check]
 
+
 def get_checks(checks: typing.Dict[CheckName, Check]) -> typing.List[Check]:
     return list(checks.values())
 
+
 def all_succeeded(checks: typing.Dict[CheckName, Check]) -> bool:
     return all(check.status == "succeeded" for check in get_checks(checks))
+
+
 # #########################################################################
 # Generated enums (1)
 # #########################################################################
 
+
 class FaithfulnessErrorType(str, Enum):
     CONTRADICTORY_FACTS = "CONTRADICTORY_FACTS"
-    EXAGGERATED_NUMBERS = "EXAGGERATED_NUMBERS"
+    NUMERIC_STATISTICAL_DISTORTION = "NUMERIC_STATISTICAL_DISTORTION"
     WRONG_DATES_TIMELINE = "WRONG_DATES_TIMELINE"
-    INCORRECT_NAMES_IDENTIFIERS = "INCORRECT_NAMES_IDENTIFIERS"
-    MISATTRIBUTED_QUOTES = "MISATTRIBUTED_QUOTES"
-    OUT_OF_CONTEXT_INFORMATION = "OUT_OF_CONTEXT_INFORMATION"
-    WRONG_SOURCE_ATTRIBUTION = "WRONG_SOURCE_ATTRIBUTION"
-    FABRICATED_CITATIONS = "FABRICATED_CITATIONS"
-    PARTIAL_TRUTH_DISTORTION = "PARTIAL_TRUTH_DISTORTION"
+    INCORRECT_ATTRIBUTION_IDENTIFIER = "INCORRECT_ATTRIBUTION_IDENTIFIER"
+    CONTEXTUAL_OMISSION = "CONTEXTUAL_OMISSION"
+    BAD_OR_NONEXISTENT_SOURCE = "BAD_OR_NONEXISTENT_SOURCE"
     SPECULATION_AS_FACT = "SPECULATION_AS_FACT"
     OUTDATED_INFORMATION = "OUTDATED_INFORMATION"
-    MISSING_QUALIFICATIONS = "MISSING_QUALIFICATIONS"
     FALSE_CAUSATION = "FALSE_CAUSATION"
     OVERGENERALIZATION = "OVERGENERALIZATION"
-    CHERRY_PICKING = "CHERRY_PICKING"
-    MISINTERPRETATION_OF_STATISTICS = "MISINTERPRETATION_OF_STATISTICS"
+
 
 # #########################################################################
 # Generated classes (1)
 # #########################################################################
 
+
 class FaithfulnessError(BaseModel):
     reasoning: str
     error_type: FaithfulnessErrorType
+
 
 # #########################################################################
 # Generated type aliases (0)

@@ -17,7 +17,10 @@ import baml_py
 from . import stream_types, types, type_builder
 from .parser import LlmResponseParser, LlmStreamParser
 from .runtime import DoNotUseDirectlyCallManager, BamlCallOptions
-from .globals import DO_NOT_USE_DIRECTLY_UNLESS_YOU_KNOW_WHAT_YOURE_DOING_RUNTIME as __runtime__
+from .globals import (
+    DO_NOT_USE_DIRECTLY_UNLESS_YOU_KNOW_WHAT_YOURE_DOING_RUNTIME as __runtime__,
+)
+
 
 class BamlSyncClient:
     __options: DoNotUseDirectlyCallManager
@@ -48,10 +51,15 @@ class BamlSyncClient:
         self.__llm_response_parser = LlmResponseParser(self.__options)
         self.__llm_stream_parser = LlmStreamParser(self.__options)
 
-    def with_options(self,
+    def with_options(
+        self,
         tb: typing.Optional[type_builder.TypeBuilder] = None,
         client_registry: typing.Optional[baml_py.baml_py.ClientRegistry] = None,
-        collector: typing.Optional[typing.Union[baml_py.baml_py.Collector, typing.List[baml_py.baml_py.Collector]]] = None,
+        collector: typing.Optional[
+            typing.Union[
+                baml_py.baml_py.Collector, typing.List[baml_py.baml_py.Collector]
+            ]
+        ] = None,
         env: typing.Optional[typing.Dict[str, typing.Optional[str]]] = None,
     ) -> "BamlSyncClient":
         options: BamlCallOptions = {}
@@ -67,32 +75,41 @@ class BamlSyncClient:
 
     @property
     def stream(self):
-      return self.__stream_client
+        return self.__stream_client
 
     @property
     def request(self):
-      return self.__http_request
+        return self.__http_request
 
     @property
     def stream_request(self):
-      return self.__http_stream_request
+        return self.__http_stream_request
 
     @property
     def parse(self):
-      return self.__llm_response_parser
+        return self.__llm_response_parser
 
     @property
     def parse_stream(self):
-      return self.__llm_stream_parser
-    
-    def ClassifyFaithfulnessErrors(self, claim: str,source_content: str,
+        return self.__llm_stream_parser
+
+    def ClassifyFaithfulnessErrors(
+        self,
+        claim: str,
+        source_content: str,
         baml_options: BamlCallOptions = {},
     ) -> typing.List["types.FaithfulnessError"]:
-        result = self.__options.merge_options(baml_options).call_function_sync(function_name="ClassifyFaithfulnessErrors", args={
-            "claim": claim,"source_content": source_content,
-        })
-        return typing.cast(typing.List["types.FaithfulnessError"], result.cast_to(types, types, stream_types, False, __runtime__))
-    
+        result = self.__options.merge_options(baml_options).call_function_sync(
+            function_name="ClassifyFaithfulnessErrors",
+            args={
+                "claim": claim,
+                "source_content": source_content,
+            },
+        )
+        return typing.cast(
+            typing.List["types.FaithfulnessError"],
+            result.cast_to(types, types, stream_types, False, __runtime__),
+        )
 
 
 class BamlStreamClient:
@@ -101,19 +118,38 @@ class BamlStreamClient:
     def __init__(self, options: DoNotUseDirectlyCallManager):
         self.__options = options
 
-    def ClassifyFaithfulnessErrors(self, claim: str,source_content: str,
+    def ClassifyFaithfulnessErrors(
+        self,
+        claim: str,
+        source_content: str,
         baml_options: BamlCallOptions = {},
-    ) -> baml_py.BamlSyncStream[typing.List["stream_types.FaithfulnessError"], typing.List["types.FaithfulnessError"]]:
-        ctx, result = self.__options.merge_options(baml_options).create_sync_stream(function_name="ClassifyFaithfulnessErrors", args={
-            "claim": claim,"source_content": source_content,
-        })
-        return baml_py.BamlSyncStream[typing.List["stream_types.FaithfulnessError"], typing.List["types.FaithfulnessError"]](
-          result,
-          lambda x: typing.cast(typing.List["stream_types.FaithfulnessError"], x.cast_to(types, types, stream_types, True, __runtime__)),
-          lambda x: typing.cast(typing.List["types.FaithfulnessError"], x.cast_to(types, types, stream_types, False, __runtime__)),
-          ctx,
+    ) -> baml_py.BamlSyncStream[
+        typing.List["stream_types.FaithfulnessError"],
+        typing.List["types.FaithfulnessError"],
+    ]:
+        ctx, result = self.__options.merge_options(baml_options).create_sync_stream(
+            function_name="ClassifyFaithfulnessErrors",
+            args={
+                "claim": claim,
+                "source_content": source_content,
+            },
         )
-    
+        return baml_py.BamlSyncStream[
+            typing.List["stream_types.FaithfulnessError"],
+            typing.List["types.FaithfulnessError"],
+        ](
+            result,
+            lambda x: typing.cast(
+                typing.List["stream_types.FaithfulnessError"],
+                x.cast_to(types, types, stream_types, True, __runtime__),
+            ),
+            lambda x: typing.cast(
+                typing.List["types.FaithfulnessError"],
+                x.cast_to(types, types, stream_types, False, __runtime__),
+            ),
+            ctx,
+        )
+
 
 class BamlHttpRequestClient:
     __options: DoNotUseDirectlyCallManager
@@ -121,14 +157,22 @@ class BamlHttpRequestClient:
     def __init__(self, options: DoNotUseDirectlyCallManager):
         self.__options = options
 
-    def ClassifyFaithfulnessErrors(self, claim: str,source_content: str,
+    def ClassifyFaithfulnessErrors(
+        self,
+        claim: str,
+        source_content: str,
         baml_options: BamlCallOptions = {},
     ) -> baml_py.baml_py.HTTPRequest:
-        result = self.__options.merge_options(baml_options).create_http_request_sync(function_name="ClassifyFaithfulnessErrors", args={
-            "claim": claim,"source_content": source_content,
-        }, mode="request")
+        result = self.__options.merge_options(baml_options).create_http_request_sync(
+            function_name="ClassifyFaithfulnessErrors",
+            args={
+                "claim": claim,
+                "source_content": source_content,
+            },
+            mode="request",
+        )
         return result
-    
+
 
 class BamlHttpStreamRequestClient:
     __options: DoNotUseDirectlyCallManager
@@ -136,13 +180,21 @@ class BamlHttpStreamRequestClient:
     def __init__(self, options: DoNotUseDirectlyCallManager):
         self.__options = options
 
-    def ClassifyFaithfulnessErrors(self, claim: str,source_content: str,
+    def ClassifyFaithfulnessErrors(
+        self,
+        claim: str,
+        source_content: str,
         baml_options: BamlCallOptions = {},
     ) -> baml_py.baml_py.HTTPRequest:
-        result = self.__options.merge_options(baml_options).create_http_request_sync(function_name="ClassifyFaithfulnessErrors", args={
-            "claim": claim,"source_content": source_content,
-        }, mode="stream")
+        result = self.__options.merge_options(baml_options).create_http_request_sync(
+            function_name="ClassifyFaithfulnessErrors",
+            args={
+                "claim": claim,
+                "source_content": source_content,
+            },
+            mode="stream",
+        )
         return result
-    
+
 
 b = BamlSyncClient(DoNotUseDirectlyCallManager({}))

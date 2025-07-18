@@ -81,7 +81,7 @@ MOCK_RESPONSE: List[Dict[str, Any]] = [
                 "reasoning": "National Geographic explains that lightning often strikes the same place repeatedly, particularly tall structures like skyscrapers.",
                 "faithfulness_errors": [
                     {
-                        "error_type": FaithfulnessErrorType.OUT_OF_CONTEXT_INFORMATION,
+                        "error_type": FaithfulnessErrorType.CONTEXTUAL_OMISSION,
                         "reasoning": "Lightning can and does strike the same place multiple times, so the claim is factually incorrect.",
                     }
                 ],
@@ -97,7 +97,7 @@ MOCK_RESPONSE: List[Dict[str, Any]] = [
                 "reasoning": "Britannica clarifies that bats are not blind; most species have good eyesight and use echolocation to navigate in the dark.",
                 "faithfulness_errors": [
                     {
-                        "error_type": FaithfulnessErrorType.OUT_OF_CONTEXT_INFORMATION,
+                        "error_type": FaithfulnessErrorType.INCORRECT_ATTRIBUTION_IDENTIFIER,
                         "reasoning": "Bats are not blind; most have good eyesight, so the claim is factually incorrect.",
                     }
                 ],
@@ -127,7 +127,7 @@ MOCK_RESPONSE: List[Dict[str, Any]] = [
                         "reasoning": "Goldfish have a memory span much longer than three seconds, so the claim is factually incorrect.",
                     },
                     {
-                        "error_type": FaithfulnessErrorType.MISINTERPRETATION_OF_STATISTICS,
+                        "error_type": FaithfulnessErrorType.NUMERIC_STATISTICAL_DISTORTION,
                         "reasoning": "The claim misrepresents the memory span of goldfish, which is much longer than three seconds.",
                     },
                 ],
