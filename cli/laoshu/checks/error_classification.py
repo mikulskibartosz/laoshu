@@ -7,7 +7,7 @@ class ErrorClassificationCheck:
     async def classify_errors(
         self, claim: str, source_content: str
     ) -> List[FaithfulnessError]:
-        errors = await b.ClassifyFaithfulnessErrors(claim, source_content)
+        errors = await self._classify_errors(claim, source_content)
 
         merged: Dict[FaithfulnessErrorType, FaithfulnessError] = {}
         for error in errors:
@@ -17,3 +17,8 @@ class ErrorClassificationCheck:
             else:
                 merged[key] = error
         return list(merged.values())
+
+    async def _classify_errors(
+        self, claim: str, source_content: str
+    ) -> List[FaithfulnessError]:
+        return await b.ClassifyFaithfulnessErrors(claim, source_content)
