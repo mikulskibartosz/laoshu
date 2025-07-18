@@ -210,7 +210,7 @@ class PublicationTimeAst:
         self._bldr = _tb.class_("PublicationTime")
         self._properties: typing.Set[str] = set(
             [
-                "Reasoning",
+                "reasoning",
                 "is_in_the_text",
                 "year",
                 "month",
@@ -246,8 +246,8 @@ class PublicationTimeProperties:
         self.__properties = properties  # type: ignore (we know how to use this private attribute) # noqa: F821
 
     @property
-    def Reasoning(self) -> type_builder.ClassPropertyViewer:
-        return type_builder.ClassPropertyViewer(self.__bldr.property("Reasoning"))
+    def reasoning(self) -> type_builder.ClassPropertyViewer:
+        return type_builder.ClassPropertyViewer(self.__bldr.property("reasoning"))
 
     @property
     def is_in_the_text(self) -> type_builder.ClassPropertyViewer:

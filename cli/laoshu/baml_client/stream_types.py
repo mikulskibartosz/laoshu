@@ -37,7 +37,7 @@ class FaithfulnessError(BaseModel):
 
 
 class PublicationTime(BaseModel):
-    Reasoning: typing.Optional[str] = None
+    reasoning: typing.Optional[str] = None
     is_in_the_text: typing.Optional[bool] = None
     year: typing.Optional[int] = None
     month: typing.Optional[int] = None

@@ -1,3 +1,4 @@
+from laoshu.baml_client.types import PublicationTime
 from laoshu.baml_client import b
 from datetime import datetime, timezone, timedelta
 from dataclasses import dataclass
@@ -12,7 +13,7 @@ class FreshnessCheckResult:
 
 class FreshnessCheck:
     async def check_freshness(self, source_markdown: str) -> FreshnessCheckResult:
-        publication_time = await b.GetPublicationTime(source_markdown)
+        publication_time = await self._check_freshness(source_markdown)
         if not publication_time.is_in_the_text:
             return FreshnessCheckResult(
                 publication_date_iso8601=None, relative_to_now=None
@@ -26,13 +27,19 @@ class FreshnessCheck:
 
         # Assume timezone UTC for publication_date
         publication_date = publication_date.replace(tzinfo=timezone.utc)
-        delta = datetime.now(timezone.utc) - publication_date
+        delta = self._today() - publication_date
         relative_to_now = self._get_relative_to_now(delta)
 
         return FreshnessCheckResult(
             publication_date_iso8601=publication_date.strftime("%Y-%m-%d"),
             relative_to_now=relative_to_now,
         )
+
+    async def _check_freshness(self, source_markdown: str) -> PublicationTime:
+        return await b.GetPublicationTime(source_markdown)
+
+    def _today(self) -> datetime:
+        return datetime.now(timezone.utc)
 
     def _get_relative_to_now(self, delta: timedelta) -> str:
         days = delta.days

@@ -72,7 +72,7 @@ class FaithfulnessError(BaseModel):
 
 
 class PublicationTime(BaseModel):
-    Reasoning: str
+    reasoning: str
     is_in_the_text: bool
     year: int
     month: int

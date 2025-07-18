@@ -1,5 +1,5 @@
 class PublicationTime {
-  Reasoning string
+  reasoning string
   is_in_the_text bool
   year int
   month int
