@@ -16,7 +16,7 @@ const Footer = () => {
               Bartosz Mikulski
             </a>{" "}
             — AI hallucination-prevention specialist delivering rapid MVPs, seamless LLM integration, and production-grade reliability fixes.<br/>
-            Lǎoshǔ found an issue you can&apos;t squash? <a href="https://mikulskibartosz.name/about" className="link link-hover font-semibold">Reach out for a custom solution.</a>
+            Lǎoshǔ found an issue you can&apos;t squash? <a href="https://mikulskibartosz.name/services" className="link link-hover font-semibold">Reach out for a custom solution.</a>
           </p>
           <p className="mt-3 text-sm text-base-content/60">
           Lǎoshǔ.ai is released under the GNU Affero General Public License v3.0. Commercial entities wishing to use it under a different license should contact me.
