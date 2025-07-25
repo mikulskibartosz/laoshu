@@ -74,7 +74,9 @@ class DoNotUseDirectlyCallManager:
         collectors_as_list = (
             collector
             if isinstance(collector, list)
-            else [collector] if collector is not None else []
+            else [collector]
+            if collector is not None
+            else []
         )
         env_vars = os.environ.copy()
         for k, v in self.__baml_options.get("env", {}).items():

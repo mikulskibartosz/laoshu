@@ -7,10 +7,10 @@ test-all:
 	poetry run pytest -m "cicd"
 
 format:
-	poetry run black .
+	poetry run ruff format .
 
 check-format:
-	poetry run black --check .
+	poetry run ruff check .
 
 lint:
 	poetry run mypy .

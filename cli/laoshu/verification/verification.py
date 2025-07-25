@@ -76,7 +76,7 @@ def map_error_to_result(
                     source=result.url,
                     status=VerificationStatus.BOT_TRAFFIC_DETECTED,
                     reasoning="",
-                    error_description=f"Bot traffic detected. Cannot access the page.",
+                    error_description="Bot traffic detected. Cannot access the page.",
                     faithfulness_errors=[],
                     publication_date_iso8601=None,
                     publication_date_relative_to_now=None,

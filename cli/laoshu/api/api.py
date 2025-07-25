@@ -182,19 +182,22 @@ async def check(request: CheckRequest) -> StreamingResponse:
                     log.info(
                         f"Yielding mock pending for claim: {pending['claim']}, source: {pending['sources'][0]['source']}"
                     )
-                    yield CheckResponse(
-                        claim=pending["claim"],
-                        sources=[
-                            SourceVerificationResult(
-                                source=pending["sources"][0]["source"],
-                                status=VerificationStatus.CHECK_PENDING,
-                                reasoning=pending["sources"][0]["reasoning"],
-                                error_description=pending["sources"][0].get(
-                                    "error_description"
-                                ),
-                            )
-                        ],
-                    ).model_dump_json() + "\n"
+                    yield (
+                        CheckResponse(
+                            claim=pending["claim"],
+                            sources=[
+                                SourceVerificationResult(
+                                    source=pending["sources"][0]["source"],
+                                    status=VerificationStatus.CHECK_PENDING,
+                                    reasoning=pending["sources"][0]["reasoning"],
+                                    error_description=pending["sources"][0].get(
+                                        "error_description"
+                                    ),
+                                )
+                            ],
+                        ).model_dump_json()
+                        + "\n"
+                    )
                     await asyncio.sleep(0.1)
                     # Now yield the final result
                     final = result.copy()
@@ -202,26 +205,29 @@ async def check(request: CheckRequest) -> StreamingResponse:
                     log.info(
                         f"Yielding mock final for claim: {final['claim']}, source: {final['sources'][0]['source']}"
                     )
-                    yield CheckResponse(
-                        claim=final["claim"],
-                        sources=[
-                            SourceVerificationResult(
-                                source=final["sources"][0]["source"],
-                                status=VerificationStatus(
-                                    final["sources"][0]["status"]
-                                ),
-                                reasoning=final["sources"][0]["reasoning"],
-                                error_description=final["sources"][0].get(
-                                    "error_description"
-                                ),
-                                faithfulness_errors=final["sources"][0].get(
-                                    "faithfulness_errors", []
-                                ),
-                                publication_date_iso8601="2024-01-01",
-                                publication_date_relative_to_now="1 year ago",
-                            )
-                        ],
-                    ).model_dump_json() + "\n"
+                    yield (
+                        CheckResponse(
+                            claim=final["claim"],
+                            sources=[
+                                SourceVerificationResult(
+                                    source=final["sources"][0]["source"],
+                                    status=VerificationStatus(
+                                        final["sources"][0]["status"]
+                                    ),
+                                    reasoning=final["sources"][0]["reasoning"],
+                                    error_description=final["sources"][0].get(
+                                        "error_description"
+                                    ),
+                                    faithfulness_errors=final["sources"][0].get(
+                                        "faithfulness_errors", []
+                                    ),
+                                    publication_date_iso8601="2024-01-01",
+                                    publication_date_relative_to_now="1 year ago",
+                                )
+                            ],
+                        ).model_dump_json()
+                        + "\n"
+                    )
                     await asyncio.sleep(random.uniform(0.1, 0.5))
 
         stream_fn = stream_mock_response(log)
@@ -247,9 +253,10 @@ async def check(request: CheckRequest) -> StreamingResponse:
                     log.info(
                         f"Yielding real result for claim: {claim}, sources: {[s.source for s in result.sources]}"
                     )
-                    yield CheckResponse(
-                        claim=claim, sources=sources
-                    ).model_dump_json() + "\n"
+                    yield (
+                        CheckResponse(claim=claim, sources=sources).model_dump_json()
+                        + "\n"
+                    )
             except Exception as e:
                 log.error(f"Error in streaming: {e}")
                 # Interrupt the stream with an error message
